@@ -4,7 +4,7 @@ from enum import Enum
 class Category(Enum):
     SPOTIFY = 'Spotify'
     TV_SUBSCRIPTION = 'TV-abonnoment'
-    STIPEND = 'Stipend'
+    STIPEND_ANDREAS = 'Stipend Andreas'
     PAYMENT = 'Lønn'
     PUBLIC_TRANSPORT = 'Kollektiv'
     PARKING = 'Parkering'
@@ -29,7 +29,7 @@ transaction_keywords = [
         'description': 'Viaplay',
     },
     {
-        'category': Category.STIPEND,
+        'category': Category.STIPEND_ANDREAS,
         'description': 'Statens lånekasse',
     },
     {
