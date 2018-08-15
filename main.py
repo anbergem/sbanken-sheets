@@ -8,6 +8,30 @@ from Sbanken import Sbanken
 from google_sheets import GSheets
 
 
+def main():
+    import private_api_keys
+    import urls
+
+    sbanken = Sbanken(private_api_keys.CLIENTID, private_api_keys.SECRET, private_api_keys.CUSTOMERID)
+
+    accounts = sbanken.get_accounts()
+
+    account = accounts[0]
+
+    transactions = sbanken.get_transactions(account['accountId'],
+                                            startDate='2018-08-01',
+                                            length=5,
+                                            index=5)
+
+    service = GSheets(urls.spreadsheet_id)
+
+    values = list(map(lambda t: t.to_sheets_row(), transactions))
+
+    response = service.append('Dummy!B5:E', values)
+
+    pprint(response)
+
+
 def sbanken():
     import private_api_keys
 
@@ -17,7 +41,10 @@ def sbanken():
 
     account = accounts[0]
 
-    transactions = sbanken.get_transactions(account['accountId'], startDate='2018-08-01', length=5, index=5)
+    transactions = sbanken.get_transactions(account['accountId'],
+                                            startDate='2018-08-01',
+                                            length=5,
+                                            index=5)
 
     # filtered = filter(lambda x: x.category, transactions)
     # for t in filtered:
@@ -43,5 +70,6 @@ def sheets():
 
 
 if __name__ == "__main__":
-    #sbanken()
-    sheets()
+    # sbanken()
+    # sheets()
+    main()

@@ -48,3 +48,6 @@ class Transaction(object):
 
     def to_csv(self):
         return ','.join([self.text, str(self.amount), self.category.value if self.category else ''])
+
+    def to_sheets_row(self):
+        return ['Dagens dato', str(self.amount), self.text, self.category.value if self.category else '']
