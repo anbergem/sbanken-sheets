@@ -108,3 +108,5 @@ venv.bak/
 
 # Project specific
 private_api_keys.py
+
+transactions.txt

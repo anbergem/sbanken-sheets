@@ -2,20 +2,51 @@ from enum import Enum
 
 
 class Category(Enum):
-    SUBSCRIPTION = 'Abonnoment'
+    SPOTIFY = 'Spotify'
+    TV_SUBSCRIPTION = 'TV-abonnoment'
+    STIPEND = 'Stipend'
+    PAYMENT = 'Lønn'
+    PUBLIC_TRANSPORT = 'Kollektiv'
+    PARKING = 'Parkering'
+    TOLL = 'Bompenger'
 
 
 transaction_keywords = [
     {
-        'category': Category.SUBSCRIPTION,
-        'description': 'Spotify'
+        'category': Category.SPOTIFY,
+        'description': 'Spotify',
     },
     {
-        'category': Category.SUBSCRIPTION,
-        'description': 'HBO'
+        'category': Category.TV_SUBSCRIPTION,
+        'description': 'Netflix',
     },
     {
-        'category': Category.SUBSCRIPTION,
-        'description': 'Viaplay'
+        'category': Category.TV_SUBSCRIPTION,
+        'description': 'HBO',
+    },
+    {
+        'category': Category.TV_SUBSCRIPTION,
+        'description': 'Viaplay',
+    },
+    {
+        'category': Category.STIPEND,
+        'description': 'Statens lånekasse',
+    },
+    {
+        'category': Category.PAYMENT,
+        'description': 'lønn',
+        'transaction_type': 'LØNN',
+    },
+    {
+        'category': Category.PUBLIC_TRANSPORT,
+        'description': 'ruter',
+    },
+    {
+        'category': Category.PARKING,
+        'description': 'easypark',
+    },
+    {
+        'category': Category.TOLL,
+        'description': 'fjellinjen',
     },
 ]

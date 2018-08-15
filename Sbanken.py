@@ -32,16 +32,15 @@ class Sbanken(object):
                          startDate = None,
                          endDate = None
                          ) -> List[Transaction]:
-        kwargs = locals()
-        del kwargs['self']
-        del kwargs['account_id']
+        # Gather parameters and stringify them. Exclude values not being sent to headers.
+        kwargs = {key: str(value) for key, value in locals().items() if key not in ['self', 'account_id']}
 
         response = self.session.get(
             f'https://api.sbanken.no/bank/api/v1/Transactions/{account_id}',
             headers={
                 'customerId': self.customer_id,
-                'length': '100',
-                'startDate': startDate
+                'startDate': 'Aug 15, 2018 at 2:51 PM',
+                'endDate': 'Aug 01, 2018 at 2:51 PM'
             }
         ).json()
 
@@ -51,3 +50,14 @@ class Sbanken(object):
         transactions = [Transaction(transaction) for transaction in response['items']]
 
         return transactions
+
+    def get_accounts(self):
+        response = self.session.get(
+            "https://api.sbanken.no/bank/api/v1/Accounts",
+            headers={'customerId': self.customer_id}
+        ).json()
+
+        if not response["isError"]:
+            return response["items"]
+        else:
+            raise RuntimeError("{} {}".format(response["errorType"], response["errorMessage"]))
