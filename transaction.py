@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, List, Dict
 
 from constants import Category
 
@@ -16,7 +16,7 @@ class Transaction(object):
         return str(self._data)
 
     @property
-    def amount(self):
+    def amount(self) -> float:
         return self._data['amount']
 
     @property
@@ -28,7 +28,7 @@ class Transaction(object):
         return self._data['text']
 
     @property
-    def category(self):
+    def category(self) -> Optional[Category]:
         return self._category
 
     @category.setter
@@ -46,8 +46,35 @@ class Transaction(object):
 
         return None
 
-    def to_csv(self):
+    def to_csv(self) -> str:
         return ','.join([self.text, str(self.amount), self.category.value if self.category else ''])
 
-    def to_sheets_row(self):
-        return ['Dagens dato', str(self.amount), self.text, self.category.value if self.category else '']
+    def to_sheets_row(self) -> List[str]:
+        return [self.extract_date(), str(self.amount), self.text, self.category.value if self.category else '']
+
+    def extract_date(self) -> str:
+        import dateutil.parser as dp
+
+        data = self._data
+
+        if data['cardDetailsSpecified']:
+            time = dp.parse(data['cardDetails']['purchaseDate'])
+        else:
+            time = dp.parse(data['accountingDate'])
+
+        return time.date().isoformat()
+
+
+def divide_transactions(transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
+    result = {
+        'expenses': [],
+        'income': [],
+    }
+
+    for transaction in transactions:
+        if transaction.amount < 0:
+            result['expenses'].append(transaction)
+        elif transaction.amount > 0:
+            result['income'].append(transaction)
+
+    return result
