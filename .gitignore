@@ -110,3 +110,5 @@ venv.bak/
 private_api_keys.py
 
 transactions.txt
+credentials.json
+token.json
