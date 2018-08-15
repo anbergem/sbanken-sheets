@@ -25,13 +25,13 @@ def main():
 
     # Append expenses
     values = list(map(lambda t: t.to_sheets_row(), divided_transactions['expenses']))
-    response = service.append('Dummy!B5:E', values)
+    response = service.append('Dummy!B5:E', list(reversed(values)))
 
     pprint(response)
 
     # Append income
     values = list(map(lambda t: t.to_sheets_row(), divided_transactions['income']))
-    response = service.append('Dummy!G5:J', values)
+    response = service.append('Dummy!G5:J', list(reversed(values)))
 
     pprint(response)
 
