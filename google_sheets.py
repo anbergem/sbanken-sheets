@@ -29,7 +29,7 @@ class GSheets(object):
                range_str: str,
                values: List[List[str]],
                value_input_option: str = 'USER_ENTERED',
-               insert_data_option: str = 'INSERT_ROWS',) -> Dict:
+               insert_data_option: str = 'OVERWRITE',) -> Dict:
         return self.service.spreadsheets().values().append(
             spreadsheetId=self.spreadsheet_id,
             range=range_str,
