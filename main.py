@@ -5,6 +5,7 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 
 from Sbanken import Sbanken
+from google_sheets import GSheets
 
 
 def sbanken():
@@ -28,48 +29,17 @@ def sbanken():
 
 
 def sheets():
-    SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
-    store = file.Storage('token.json')
-    creds = store.get()
-    if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
-        creds = tools.run_flow(flow, store)
-    service = build('sheets', 'v4', http=creds.authorize(Http()))
-
     import urls
-    # Call the Sheets API
-    SPREADSHEET_ID = urls.spreadsheet_id
-    # RANGE_NAME = ['Dummy!B5:E', 'Dummy!G5:J', 'Dummy!L5:O']
-    RANGE_NAME = 'Dummy!B5:E'
-    # result = service.spreadsheets().values().batchGet(spreadsheetId=SPREADSHEET_ID,
-    #                                                   ranges=RANGE_NAME).execute()
-    #
-    # for value_range in result['valueRanges']:
-    #     pprint(value_range)
-    #     values = value_range.get('values', [])
-    #
-    #     if not values:
-    #         print('No data found.')
-    #     else:
-    #         for row in values:
-                # Print columns A and E, which correspond to indices 0 and 4.
-                # print(','.join(row))
+    service = GSheets(urls.spreadsheet_id)
 
-    result = service.spreadsheets().values().append(
-        spreadsheetId=SPREADSHEET_ID,
-        range=RANGE_NAME,
-        valueInputOption='USER_ENTERED',
-        insertDataOption='INSERT_ROWS',
-        body={
-            'range': RANGE_NAME,
-            'values': [
-                ['En dato', '55', 'beskrivelse', 'Kategori?'],
-                ['12/10/2018', '129', 'Netflix', 'TV-abonnoment']
-            ]
-        }
-    ).execute()
+    values = [
+        ['En dato', '55', 'beskrivelse', 'Kategori?'],
+        ['12/10/2018', '129', 'Netflix', 'TV-abonnoment']
+    ]
 
-    pprint(result)
+    response = service.append('Dummy!B5:E', values)
+
+    pprint(response)
 
 
 if __name__ == "__main__":
