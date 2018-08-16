@@ -22,27 +22,33 @@ class GSheets(object):
         self.service = GSheets._create_authenticated_google_service()
         self.spreadsheet_id = spreadsheet_id
 
-    def get(self):
-        raise NotImplementedError
+    def get(self, range):
+        return self.service.spreadsheets().values().get(
+            spreadsheetId=self.spreadsheet_id,
+            range=range
+        ).execute()
 
     def append(self,
-               range_str: str,
+               range: str,
                values: List[List[str]],
                value_input_option: str = 'USER_ENTERED',
-               insert_data_option: str = 'OVERWRITE',) -> Dict:
+               insert_data_option: str = 'OVERWRITE', ) -> Dict:
         return self.service.spreadsheets().values().append(
             spreadsheetId=self.spreadsheet_id,
-            range=range_str,
+            range=range,
             valueInputOption=value_input_option,
             insertDataOption=insert_data_option,
             body={
-                'range': range_str,
+                'range': range,
                 'values': values
             }
         ).execute()
 
-    def get_batch(self):
-        raise NotImplementedError
+    def get_batch(self, ranges: List[str]):
+        return self.service.spreadsheets().values().getBatch(
+            spreadsheetId=self.spreadsheet_id,
+            ranges=ranges
+        ).execute()
 
     def clear(self):
         raise NotImplementedError
