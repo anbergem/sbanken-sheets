@@ -23,15 +23,24 @@ def main():
 
     divided_transactions = divide_transactions(transactions)
 
+    import google_sheets_helpers as gsh
+
+    # Todo: Include savings
+    # Start cells
+    expenses, income, *_ = gsh.find_date_cells(service, 'Dummy')
+
+    expenses_range = gsh.find_transaction_range(expenses)
+    income_range   = gsh.find_transaction_range(income)
+
     # Append expenses
     values = list(map(lambda t: t.to_sheets_row(), divided_transactions['expenses']))
-    response = service.append('Dummy!B5:E', list(reversed(values)))
+    response = service.append(f'Dummy!{expenses_range}', list(reversed(values)))
 
     pprint(response)
 
     # Append income
     values = list(map(lambda t: t.to_sheets_row(), divided_transactions['income']))
-    response = service.append('Dummy!G5:J', list(reversed(values)))
+    response = service.append(f'Dummy!{income_range}', list(reversed(values)))
 
     pprint(response)
 
@@ -68,9 +77,13 @@ def sheets():
         ['12/10/2018', '129', 'Netflix', 'TV-abonnoment']
     ]
 
-    response = service.append('Dummy!B5:E', values)
+    # response = service.append('Dummy!B5:E', values)
 
-    pprint(response)
+    import google_sheets_helpers as gsh
+
+    expenses, income, savings, *_ = gsh.find_date_cells(service, 'Dummy')
+
+    print(expenses, income, savings)
 
 
 if __name__ == "__main__":
