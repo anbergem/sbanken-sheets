@@ -1,8 +1,10 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple, Union, Iterable
 
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
+
+import google_sheets_helpers as gsh
 
 
 class GSheets(object):
@@ -52,3 +54,42 @@ class GSheets(object):
 
     def clear(self):
         raise NotImplementedError
+
+
+class A1Cell(object):
+
+    def __init__(self, *args: Union[Union[List[int, int], Tuple[int, int]], 'A1Cell', int]):
+
+        if len(args) == 1 and (isinstance(args, (A1Cell, tuple))):
+            if isinstance(args, A1Cell):
+                self._initialize_from_cell(args)
+            elif isinstance(args, (tuple, list)) and len(args) == 2 and all((isinstance(x, int) for x in args)):
+                self._initialize_from_tuple_ints(args)
+
+        elif len(args) == 2 and all(isinstance(x, int) for x in args):
+            self._initialize_from_row_col_idx(*args)
+
+    def _initialize_from_tuple_ints(self, tuple_idx: Tuple[int, int]):
+        self.row_idx, self.col_idx = tuple_idx
+        self._a1_cell = gsh.idx_to_cell(self.row_idx, self.col_idx)
+
+    def _initialize_from_row_col_idx(self, row_col_idx):
+        self.row_idx, self.col_idx = row_col_idx
+        self._a1_cell = gsh.idx_to_cell(*row_col_idx)
+
+    def _initialize_from_cell(self, a1cell: 'A1Cell'):
+        self._a1_cell = a1cell._a1_cell
+        self.row_idx, self.col_idx = gsh.cell_to_idx(str(a1cell))
+
+    def __getitem__(self, key):
+        if 0 > key > 1:
+            raise IndexError(f'Expected 0 or 1: {key}')
+        else:
+            return self._a1_cell[key]
+
+    def __add__(self, other):
+        if isinstance(other, int):
+            return
+
+    def __str__(self):
+        return self._a1_cell
