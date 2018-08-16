@@ -49,8 +49,9 @@ class Transaction(object):
     def to_csv(self) -> str:
         return ','.join([self.text, str(self.amount), self.category.value if self.category else ''])
 
-    def to_sheets_row(self) -> List[str]:
-        return [self.extract_date(), str(self.amount), self.text, self.category.value if self.category else '']
+    def to_sheets_row(self, encoding: bool=False) -> List[str]:
+        result = [self.encode()] if encoding else []
+        return result + [self.extract_date(), str(self.amount), self.text, self.category.value if self.category else '']
 
     def extract_date(self) -> str:
         import dateutil.parser as dp
@@ -64,6 +65,25 @@ class Transaction(object):
 
         return time.date().isoformat()
 
+    @staticmethod
+    def decode(encoded_str: str) -> 'Transaction':
+        import base64
+        import pickle
+
+        encoded_bytes = encoded_str.encode('utf-8')
+        data_str = base64.urlsafe_b64decode(encoded_bytes)
+        data = pickle.loads(data_str)
+
+        return Transaction(data)
+
+    def encode(self) -> str:
+        import base64
+        import pickle
+
+        data_str = pickle.dumps(self._data)
+
+        return base64.urlsafe_b64encode(data_str).decode('utf-8')
+
 
 def divide_transactions(transactions: List[Transaction], savingsAccount=None) -> Dict[str, List[Transaction]]:
     result = {}
@@ -71,10 +91,10 @@ def divide_transactions(transactions: List[Transaction], savingsAccount=None) ->
     for transaction in transactions:
         # Todo: Find out how to filter savings transactions
         if transaction._data is None:
-            result.get('savings', []).append(transaction)
+            result['savings'] = result.get('savings', []) + [transaction]
         elif transaction.amount < 0:
-            result.get('expenses', []).append(transaction)
+            result['expenses'] = result.get('expenses', []) + [transaction]
         elif transaction.amount > 0:
-            result.get('income', []).append(transaction)
+            result['income'] = result.get('income', []) + [transaction]
 
     return result

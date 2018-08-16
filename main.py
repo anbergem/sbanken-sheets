@@ -2,7 +2,7 @@ from pprint import pprint
 
 from sbanken import Sbanken
 from google_sheets import GSheets
-from transaction import divide_transactions
+from transaction import divide_transactions, Transaction
 
 
 def main():
@@ -32,19 +32,19 @@ def main():
 
     # Todo: Include savings
     # Start cells
-    expenses, income, *savings = gsh.find_date_cells(service, 'Dummy')
+    expenses, income, *savings = gsh.find_date_cells(service, 'Dummy', encoding=True)
 
-    expenses_range = gsh.find_transaction_range(expenses)
-    income_range = gsh.find_transaction_range(income)
+    expenses_range = gsh.find_transaction_range(expenses, encoding=True)
+    income_range = gsh.find_transaction_range(income, encoding=True)
 
     # Append expenses
-    values = list(map(lambda t: t.to_sheets_row(), divided_transactions['expenses']))
+    values = list(map(lambda t: t.to_sheets_row(encoding=True), divided_transactions['expenses']))
     response = service.append(f'Dummy!{expenses_range}', list(reversed(values)))
 
     pprint(response)
 
     # Append income
-    values = list(map(lambda t: t.to_sheets_row(), divided_transactions['income']))
+    values = list(map(lambda t: t.to_sheets_row(encoding=True), divided_transactions['income']))
     response = service.append(f'Dummy!{income_range}', list(reversed(values)))
 
     pprint(response)
@@ -67,7 +67,8 @@ def sbanken():
     # filtered = filter(lambda x: x.category, transactions)
     # for t in filtered:
     #     print(f'text: {t.text}, amount: {t.amount}, category: {t.category}')
-    pprint([x._data for x in transactions])
+    encoded = [x.encode() for x in transactions]
+    pprint([Transaction.decode(x) for x in encoded])
     # with open('transactions.txt', 'w') as file:
     #     for t in transactions:
     #         file.write(f'{t.to_csv()}\n')
@@ -92,6 +93,6 @@ def sheets():
 
 
 if __name__ == "__main__":
-    sbanken()
+    # sbanken()
     # sheets()
-    # main()
+    main()
