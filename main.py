@@ -1,6 +1,6 @@
 from pprint import pprint
 
-from Sbanken import Sbanken
+from sbanken import Sbanken
 from google_sheets import GSheets
 from transaction import divide_transactions
 
