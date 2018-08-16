@@ -65,16 +65,16 @@ class Transaction(object):
         return time.date().isoformat()
 
 
-def divide_transactions(transactions: List[Transaction]) -> Dict[str, List[Transaction]]:
-    result = {
-        'expenses': [],
-        'income': [],
-    }
+def divide_transactions(transactions: List[Transaction], savingsAccount=None) -> Dict[str, List[Transaction]]:
+    result = {}
 
     for transaction in transactions:
-        if transaction.amount < 0:
-            result['expenses'].append(transaction)
+        # Todo: Find out how to filter savings transactions
+        if transaction._data is None:
+            result.get('savings', []).append(transaction)
+        elif transaction.amount < 0:
+            result.get('expenses', []).append(transaction)
         elif transaction.amount > 0:
-            result['income'].append(transaction)
+            result.get('income', []).append(transaction)
 
     return result

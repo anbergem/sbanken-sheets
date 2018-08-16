@@ -29,8 +29,8 @@ class Sbanken(object):
                          account_id: str,
                          index: int = 0,
                          length: int = 100,
-                         startDate = None,
-                         endDate = None
+                         start_date=None,
+                         end_date=None
                          ) -> List[Transaction]:
         # Gather parameters and stringify them. Exclude values not being sent to headers.
         kwargs = {key: str(value) for key, value in locals().items() if key not in ['self', 'account_id']}
@@ -39,8 +39,7 @@ class Sbanken(object):
             f'https://api.sbanken.no/bank/api/v1/Transactions/{account_id}',
             headers={
                 'customerId': self.customer_id,
-                'startDate': 'Aug 15, 2018 at 2:51 PM',
-                'endDate': 'Aug 01, 2018 at 2:51 PM'
+                **kwargs
             }
         ).json()
 

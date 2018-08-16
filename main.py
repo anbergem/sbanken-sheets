@@ -8,14 +8,21 @@ from transaction import divide_transactions
 def main():
     import private_api_keys
     import urls
+    import google_sheets_helpers as gsh
 
     sbanken = Sbanken(private_api_keys.CLIENTID, private_api_keys.SECRET, private_api_keys.CUSTOMERID)
 
     accounts = sbanken.get_accounts()
+
+    # Todo: make this pretty
+    for account in accounts:
+        if account['name'] == 'Sparekonto':
+            savings_account = account['accountId']
+
     account = accounts[0]
 
     transactions = sbanken.get_transactions(account['accountId'],
-                                            startDate='2018-08-01',
+                                            start_date='2018-08-01',
                                             length=5,
                                             index=5)
 
@@ -23,14 +30,12 @@ def main():
 
     divided_transactions = divide_transactions(transactions)
 
-    import google_sheets_helpers as gsh
-
     # Todo: Include savings
     # Start cells
-    expenses, income, *_ = gsh.find_date_cells(service, 'Dummy')
+    expenses, income, *savings = gsh.find_date_cells(service, 'Dummy')
 
     expenses_range = gsh.find_transaction_range(expenses)
-    income_range   = gsh.find_transaction_range(income)
+    income_range = gsh.find_transaction_range(income)
 
     # Append expenses
     values = list(map(lambda t: t.to_sheets_row(), divided_transactions['expenses']))
@@ -55,7 +60,7 @@ def sbanken():
     account = accounts[0]
 
     transactions = sbanken.get_transactions(account['accountId'],
-                                            startDate='2018-08-01',
+                                            start_date='2018-08-01',
                                             length=5,
                                             index=5)
 
@@ -87,6 +92,6 @@ def sheets():
 
 
 if __name__ == "__main__":
-    # sbanken()
+    sbanken()
     # sheets()
-    main()
+    # main()
