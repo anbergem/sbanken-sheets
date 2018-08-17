@@ -97,16 +97,16 @@ class A1Cell(object):
                 self._idxs[0] += value
 
     def __add__(self, value: Union[Tuple[int, int], 'A1Cell']):
-        if not isinstance(value, tuple) or len(value) != 2 or all(isinstance(x, int) for x in value):
-            raise ValueError(f'Expected tuple of two ints: {value.__class__}')
+        if isinstance(value, tuple) and len(value) == 2 and all(isinstance(x, int) for x in value):
+            return A1Cell(self._add_to_col(value[0]), self._idxs[1] + value[1])
 
-        return A1Cell(self._add_to_col(value[0]), self._idxs[1] + value[1])
+        raise ValueError(f'Expected tuple of two ints: {value.__class__}')
 
     def __iadd__(self, value: Union[Tuple[int, int]]):
-        if not isinstance(value, tuple) or len(value) != 2 or not all(isinstance(x, int) for x in value):
-            raise ValueError(f'Expected tuple of two ints: {value.__class__}')
+        if isinstance(value, tuple) and len(value) == 2 and all(isinstance(x, int) for x in value):
+            return A1Cell(self._add_to_col(value[0]), self._idxs[1] + value[1])
 
-        return A1Cell(self._add_to_col(value[0]), self._idxs[1] + value[1])
+        raise ValueError(f'Expected tuple of two ints: {value.__class__}')
 
     def __str__(self):
         return idx_to_cell(*self._idxs)
@@ -118,8 +118,15 @@ class A1Cell(object):
 
 
 class A1Range(object):
-    def __init__(self, start: A1Cell, end: A1Cell):
-        self._range = (start, end)
+    def __init__(self, start: A1Cell, end_cell: A1Cell=None, range: Tuple[int, int]=None):
+        if not end_cell and not range:
+            raise ValueError('Must sepcify end_cell or range')
+        elif end_cell and range:
+            raise ValueError('Cannot specify both end_cell and range')
+        elif end_cell:
+            self._range = (start, end_cell)
+        elif range:
+            self._range = (start, A1Cell(start+range))
 
     def __str__(self) -> str:
         return '{}:{}'.format(*self._range)
@@ -175,11 +182,6 @@ def col_to_index(col: 'str') -> int:
 
 if __name__ == '__main__':
     c1 = A1Cell('C1')
-    a1 = A1Cell(0, 0)
 
-    print(str(c1))
-    print(c1[0])
-    print(c1[1])
-    c1 += (3, 2)
-    print(str(c1))
+    c1 += (4, 0)
     print(c1)

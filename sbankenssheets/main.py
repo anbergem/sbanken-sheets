@@ -1,7 +1,7 @@
 from pprint import pprint
 
 from sbankenssheets.sbanken import Sbanken, Transaction, divide_transactions
-from sbankenssheets.gsheets.google_sheets import GSheets
+from sbankenssheets.gsheets.google_sheets import GSheets, A1Range
 
 
 def main():
@@ -33,8 +33,8 @@ def main():
     # Start cells
     expenses, income, *savings = gsh.find_date_cells(service, 'Dummy', encoding=True)
 
-    expenses_range = gsh.find_transaction_range(expenses, encoding=True)
-    income_range = gsh.find_transaction_range(income, encoding=True)
+    expenses_range = A1Range(expenses, range=(4, 0))
+    income_range = A1Range(income, range=(4, 0))
 
     # Append expenses
     values = list(map(lambda t: t.to_sheets_row(encoding=True), divided_transactions['expenses']))
