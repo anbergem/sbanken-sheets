@@ -4,8 +4,6 @@ from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
 
-from sbankenssheets.gsheets import google_sheets_helpers as gsh
-
 
 class GSheets(object):
 
@@ -75,10 +73,10 @@ class A1Cell(object):
         self._idxs = list(col_row_idx)
 
     def _initialize_from_cell(self, a1cell: 'A1Cell'):
-        self._idxs = list(gsh.cell_to_idx(str(a1cell)))
+        self._idxs = list(cell_to_idx(str(a1cell)))
 
     def _initialize_from_str(self, args):
-        self._idxs = list(gsh.cell_to_idx(args))
+        self._idxs = list(cell_to_idx(args))
 
     def __getitem__(self, key) -> str:
         if key < 0 or key > 1:
@@ -111,7 +109,7 @@ class A1Cell(object):
         return A1Cell(self._add_to_col(value[0]), self._idxs[1] + value[1])
 
     def __str__(self):
-        return gsh.idx_to_cell(*self._idxs)
+        return idx_to_cell(*self._idxs)
 
     def _add_to_col(self, value):
         if self._idxs[0] + value > 25:
@@ -130,6 +128,49 @@ class A1Range(object):
         if 0 > key > 1:
             raise IndexError(f'Expected 0 or 1: {key}')
         return self._range[key]
+
+
+def idx_to_row(idx: int) -> int:
+    return idx+1
+
+
+def idx_to_col(col: int) -> str:
+    # Does not support columns above Z
+    if col > 25:
+        raise ValueError(f'Columns above idx 25 (Z) are not supported')
+    return f'{chr(ord("A")+col)}'
+
+
+def idx_to_cell(col: int, row: int) -> str:
+    return f'{idx_to_col(col)}{idx_to_row(row)}'
+
+
+def cell_to_idx(cell: str) -> Tuple[int, int]:
+    import re
+
+    match = re.match(r'(^[A-Z]+)([0-9]+$)', cell)
+
+    if not match:
+        raise ValueError(f'Invalid cell: {cell}')
+
+    col, row = match.groups()
+
+    col_idx = col_to_index(col)
+    row_idx = row_to_index(int(row))
+
+    return col_idx, row_idx
+
+
+def row_to_index(row: int) -> int:
+    return row - 1
+
+
+def col_to_index(col: 'str') -> int:
+    # Does not suppoert columns above Z
+    if len(col) > 1:
+        raise ValueError(f'Columns above Z are not supported: {col}')
+
+    return ord(col) - ord('A')
 
 
 if __name__ == '__main__':
