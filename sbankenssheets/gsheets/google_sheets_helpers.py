@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 
-from google_sheets import GSheets
+from sbankenssheets.gsheets import GSheets
 
 
 def find_date_cells(service: GSheets, sheet: str, encoding: bool=False) -> Optional[List[str]]:
@@ -36,7 +36,7 @@ def idx_to_col(col: int) -> str:
     return f'{chr(ord("A")+col)}'
 
 
-def idx_to_cell(row: int, col: int) -> str:
+def idx_to_cell(col: int, row: int) -> str:
     return f'{idx_to_col(col)}{idx_to_row(row)}'
 
 
@@ -53,7 +53,7 @@ def cell_to_idx(cell: str) -> Tuple[int, int]:
     col_idx = col_to_index(col)
     row_idx = row_to_index(int(row))
 
-    return row_idx, col_idx
+    return col_idx, row_idx
 
 
 def row_to_index(row: int) -> int:

@@ -1,14 +1,13 @@
 from pprint import pprint
 
-from sbanken import Sbanken
-from google_sheets import GSheets
-from transaction import divide_transactions, Transaction
+from sbankenssheets.sbanken import Sbanken, Transaction, divide_transactions
+from sbankenssheets.gsheets.google_sheets import GSheets
 
 
 def main():
-    import private_api_keys
-    import urls
-    import google_sheets_helpers as gsh
+    from sbankenssheets import private_api_keys
+    from sbankenssheets import urls
+    from sbankenssheets.gsheets import google_sheets_helpers as gsh
 
     sbanken = Sbanken(private_api_keys.CLIENTID, private_api_keys.SECRET, private_api_keys.CUSTOMERID)
 
@@ -51,7 +50,7 @@ def main():
 
 
 def sbanken():
-    import private_api_keys
+    from sbankenssheets import private_api_keys
 
     sbanken = Sbanken(private_api_keys.CLIENTID, private_api_keys.SECRET, private_api_keys.CUSTOMERID)
 
@@ -75,7 +74,7 @@ def sbanken():
 
 
 def sheets():
-    import urls
+    from sbankenssheets import urls
     service = GSheets(urls.spreadsheet_id)
 
     values = [
@@ -85,7 +84,7 @@ def sheets():
 
     # response = service.append('Dummy!B5:E', values)
 
-    import google_sheets_helpers as gsh
+    from sbankenssheets.gsheets import google_sheets_helpers as gsh
 
     expenses, income, savings, *_ = gsh.find_date_cells(service, 'Dummy')
 

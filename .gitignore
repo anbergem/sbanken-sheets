@@ -107,8 +107,8 @@ venv.bak/
 .idea
 
 # Project specific
-private_api_keys.py
+sbankenssheets/private_api_keys.py
 
-transactions.txt
-credentials.json
-token.json
+sbankenssheets/transactions.txt
+sbankenssheets/credentials.json
+sbankenssheets/token.json
