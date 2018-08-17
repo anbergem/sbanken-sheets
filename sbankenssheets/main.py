@@ -37,13 +37,13 @@ def main():
     income_range = A1Range(income, range=(4, 0))
 
     # Append expenses
-    values = list(map(lambda t: t.to_sheets_row(encoding=True), divided_transactions['expenses']))
+    values = list(map(lambda t: t.to_sheets_row(encode=True), divided_transactions['expenses']))
     response = service.append(f'Dummy!{expenses_range}', list(reversed(values)))
 
     pprint(response)
 
     # Append income
-    values = list(map(lambda t: t.to_sheets_row(encoding=True), divided_transactions['income']))
+    values = list(map(lambda t: t.to_sheets_row(encode=True), divided_transactions['income']))
     response = service.append(f'Dummy!{income_range}', list(reversed(values)))
 
     pprint(response)

@@ -49,9 +49,12 @@ class Transaction(object):
     def to_csv(self) -> str:
         return ','.join([self.text, str(self.amount), self.category.value if self.category else ''])
 
-    def to_sheets_row(self, encoding: bool=False) -> List[str]:
-        result = [self.encode()] if encoding else []
-        return result + [self.extract_date(), str(self.amount), self.text, self.category.value if self.category else '']
+    def to_sheets_row(self, encode: bool=False) -> List[str]:
+        result = [self.encode()] if encode else []
+        return result + [self.extract_date(),
+                         str(self.amount).replace('.', ','),
+                         self.text,
+                         self.category.value if self.category else '']
 
     def extract_date(self) -> str:
         import dateutil.parser as dp
