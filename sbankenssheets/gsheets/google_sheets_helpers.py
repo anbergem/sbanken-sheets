@@ -14,7 +14,7 @@ def find_date_cells(service: GSheets, sheet: str, encoding: bool=False) -> Optio
     # Find the position of cells with Dato
     for i, row in enumerate(values):
         if 'Dato' in row:
-            return [idx_to_cell(i, j-1 if encoding else j) for j, x in enumerate(row) if x == 'Dato']
+            return [idx_to_cell(j-1 if encoding else j, i) for j, x in enumerate(row) if x == 'Dato']
 
     return None
 
