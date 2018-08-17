@@ -10,10 +10,10 @@ class GSheets(object):
     @staticmethod
     def _create_authenticated_google_service():
         SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
-        store = file.Storage('token.json')
+        store = file.Storage('auth/token.json')
         creds = store.get()
         if not creds or creds.invalid:
-            flow = client.flow_from_clientsecrets('credentials.json', SCOPES)
+            flow = client.flow_from_clientsecrets('auth/credentials.json', SCOPES)
             creds = tools.run_flow(flow, store)
         service = build('sheets', 'v4', http=creds.authorize(Http()))
         return service
