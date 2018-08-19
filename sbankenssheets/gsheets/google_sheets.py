@@ -88,7 +88,7 @@ class A1Cell(object):
         if key not in (0, 1):
             raise IndexError(f'Expected key 0 or 1: {key}')
         if key == 1:  # row
-            self._idxs[1] += value
+            self._idxs[1] = value
         else:  # column
             if isinstance(value, str) \
                     and len(value) == 1 \
