@@ -102,14 +102,11 @@ class A1Cell(object):
 
         raise ValueError(f'Expected tuple of two ints: {value.__class__}')
 
-    def __iadd__(self, value: Union[Tuple[int, int]]):
-        if isinstance(value, tuple) and len(value) == 2 and all(isinstance(x, int) for x in value):
-            return A1Cell(self._add_to_col(value[0]), self._idxs[1] + value[1])
-
-        raise ValueError(f'Expected tuple of two ints: {value.__class__}')
-
     def __str__(self):
         return idx_to_cell(*self._idxs)
+
+    def __eq__(self, other):
+        return str(self) == str(other)
 
     def _add_to_col(self, value):
         if self._idxs[0] + value > 25:
