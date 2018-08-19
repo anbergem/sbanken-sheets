@@ -20,7 +20,7 @@ class TestGSheets(unittest.TestCase):
         super().tearDown()
         mock.patch.stopall()
 
-    def test_call_serivce_get_with_correct_args(self):
+    def test_get_calls_service_get_with_correct_args(self):
         range = 'A1:C5'
         self.gsheets.get(range)
 
@@ -29,13 +29,13 @@ class TestGSheets(unittest.TestCase):
             spreadsheetId=self.gsheets.spreadsheet_id
         )
 
-    def test_call_serivce_get_execute_called_once(self):
+    def test_get_calls_service_get_execute_once(self):
         range = 'A1:C5'
         self.gsheets.get(range)
 
         self.gsheets.service.spreadsheets().values().get().execute.assert_called_once()
 
-    def test_call_serivce_append_with_correct_args(self):
+    def test_append_calls_service_append_with_correct_args(self):
         range = 'A1:B2'
         values = [['key1', 'value1'], ['key2', 'value2']]
         self.gsheets.append(
@@ -53,6 +53,32 @@ class TestGSheets(unittest.TestCase):
                 'values': values
             }
         )
+
+    def test_append_calls_service_append_execute_once(self):
+        range = 'A1:B2'
+        values = [['key1', 'value1'], ['key2', 'value2']]
+        self.gsheets.append(
+            range=range,
+            values=values
+        )
+
+        self.gsheets.service.spreadsheets().values().append().execute.assert_called_once()
+
+    def test_get_batch_calls_service_getBatch_with_correct_args(self):
+        ranges = ['A1:C5', 'A5:C7']
+        self.gsheets.get_batch(ranges)
+
+        self.gsheets.service.spreadsheets().values().getBatch.assert_called_with(
+            ranges=ranges,
+            spreadsheetId=self.gsheets.spreadsheet_id
+        )
+
+    def test_get_batch_calls_service_getBatch_execute_one(self):
+        ranges = ['A1:C5', 'A5:C7']
+        self.gsheets.get_batch(ranges)
+
+        self.gsheets.service.spreadsheets().values().getBatch().execute.assert_called_once()
+
 
 class TestA1Cell(unittest.TestCase):
 
