@@ -92,9 +92,9 @@ class A1Cell(object):
         else:  # column
             if isinstance(value, str) \
                     and len(value) == 1 \
-                    and (self._base_col <= ord(value) <= self._last_col):
-                self._idxs[0] = ord(value) - self._base_col
-            elif isinstance(value, int) and (25 > value >= 0):
+                    and (self._base_col <= ord(value.upper()) <= self._last_col):
+                self._idxs[0] = ord(value.upper()) - self._base_col
+            elif isinstance(value, int) and (25 >= value >= 0):
                 self._idxs[0] = value
             else:
                 raise ValueError('Columns above Z are not supported.')
