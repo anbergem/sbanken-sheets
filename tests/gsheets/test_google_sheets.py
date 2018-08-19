@@ -14,8 +14,7 @@ class TestGSheets(unittest.TestCase):
         mock.patch('sbankenssheets.gsheets.google_sheets.client').start()
         mock.patch('sbankenssheets.gsheets.google_sheets.tools').start()
 
-        self.id = 'some-id'
-        self.gsheets = GSheets(self.id)
+        self.gsheets = GSheets('some-id')
 
     def tearDown(self):
         super().tearDown()
@@ -27,8 +26,14 @@ class TestGSheets(unittest.TestCase):
 
         self.gsheets.service.spreadsheets().values().get.assert_called_with(
             range=range,
-            spreadsheetId=id
+            spreadsheetId=self.gsheets.spreadsheet_id
         )
+
+    def test_call_serivce_get_execute_called_once(self):
+        range = 'A1:C5'
+        self.gsheets.get(range)
+
+        self.gsheets.service.spreadsheets().values().get().execute.assert_called_once()
 
     def test_call_serivce_append_with_correct_args(self):
         range = 'A1:B2'
@@ -38,9 +43,15 @@ class TestGSheets(unittest.TestCase):
             values=values
         )
 
-        self.gsheets.service.spreadsheets().values().get.assert_called_with(
+        self.gsheets.service.spreadsheets().values().append.assert_called_with(
+            spreadsheetId=self.gsheets.spreadsheet_id,
             range=range,
-            spreadsheetId=id
+            valueInputOption='USER_ENTERED',
+            insertDataOption='OVERWRITE',
+            body={
+                'range': range,
+                'values': values
+            }
         )
 
 class TestA1Cell(unittest.TestCase):
