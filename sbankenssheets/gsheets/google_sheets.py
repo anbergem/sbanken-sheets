@@ -139,6 +139,8 @@ class A1Range(object):
     def __eq__(self, other) -> bool:
         if not isinstance(other, A1Range):
             return False
+        else:
+            return all(x == y for x, y in zip(self._range, other._range))
 
     def __getitem__(self, key: int) -> A1Cell:
         if 0 > key > 1:
