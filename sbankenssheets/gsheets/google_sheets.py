@@ -57,6 +57,7 @@ class GSheets(object):
 class A1Cell(object):
     def __init__(self, *args: Union['A1Cell', int, str]):
         self._base_col = ord('A')
+        self._last_col = ord('Z')
         if len(args) == 1:
             if isinstance(args[0], A1Cell):
                 self._initialize_from_cell(args[0])
@@ -89,12 +90,14 @@ class A1Cell(object):
         if key == 1:  # row
             self._idxs[1] += value
         else:  # column
-            if isinstance(value, str) and len(value) == 1:
+            if isinstance(value, str) \
+                    and len(value) == 1 \
+                    and (self._base_col <= ord(value) <= self._last_col):
                 self._idxs[0] = ord(value) - self._base_col
+            elif isinstance(value, int) and (25 > value >= 0):
+                self._idxs[0] = value
             else:
-                if self._idxs[0] + value > 25:
-                    raise ValueError('Columns above Z are not supported.')
-                self._idxs[0] += value
+                raise ValueError('Columns above Z are not supported.')
 
     def __add__(self, value: Union[Tuple[int, int], List[int]]):
         if isinstance(value, (tuple, list)) and len(value) == 2 and all(isinstance(x, int) for x in value):
