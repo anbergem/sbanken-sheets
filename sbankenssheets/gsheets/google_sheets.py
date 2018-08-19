@@ -96,8 +96,8 @@ class A1Cell(object):
                     raise ValueError('Columns above Z are not supported.')
                 self._idxs[0] += value
 
-    def __add__(self, value: Union[Tuple[int, int], 'A1Cell']):
-        if isinstance(value, tuple) and len(value) == 2 and all(isinstance(x, int) for x in value):
+    def __add__(self, value: Union[Tuple[int, int], List[int]]):
+        if isinstance(value, (tuple, list)) and len(value) == 2 and all(isinstance(x, int) for x in value):
             return A1Cell(self._add_to_col(value[0]), self._idxs[1] + value[1])
 
         raise ValueError(f'Expected tuple of two ints: {value.__class__}')
