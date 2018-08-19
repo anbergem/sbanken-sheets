@@ -87,8 +87,11 @@ class A1Cell(object):
     def __setitem__(self, key: int, value: Union[str, int]):
         if key not in (0, 1):
             raise IndexError(f'Expected key 0 or 1: {key}')
-        if key == 1:  # row
-            self._idxs[1] = value
+        if key == 1:
+            if isinstance(value, int) and value >= 0:  # row
+                self._idxs[1] = value
+            else:
+                raise ValueError(f'Expected int >= 0: {value}')
         else:  # column
             if isinstance(value, str) \
                     and len(value) == 1 \
@@ -105,10 +108,12 @@ class A1Cell(object):
 
         raise ValueError(f'Expected tuple of two ints: {value.__class__}')
 
-    def __str__(self):
+    def __str__(self) -> str:
         return idx_to_cell(*self._idxs)
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, A1Cell):
+            return False
         return str(self) == str(other)
 
     def _add_to_col(self, value):
@@ -130,6 +135,10 @@ class A1Range(object):
 
     def __str__(self) -> str:
         return '{}:{}'.format(*self._range)
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, A1Range):
+            return False
 
     def __getitem__(self, key: int) -> A1Cell:
         if 0 > key > 1:
