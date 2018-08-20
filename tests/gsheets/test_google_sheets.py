@@ -1,10 +1,10 @@
 import unittest
 import unittest.mock as mock
 
-from sbankenssheets.gsheets import GSheets, A1Cell, A1Range
+from sbankenssheets.gsheets import GSheet, A1Cell, A1Range
 
 
-class TestGSheets(unittest.TestCase):
+class TestGSheet(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
@@ -14,7 +14,7 @@ class TestGSheets(unittest.TestCase):
         mock.patch('sbankenssheets.gsheets.google_sheets.client').start()
         mock.patch('sbankenssheets.gsheets.google_sheets.tools').start()
 
-        self.gsheets = GSheets('some-id')
+        self.gsheets = GSheet('some-id')
 
     def tearDown(self):
         super().tearDown()

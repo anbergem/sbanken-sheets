@@ -1,7 +1,7 @@
 from pprint import pprint
 
 from sbankenssheets.sbanken import Sbanken, Transaction, divide_transactions
-from sbankenssheets.gsheets.google_sheets import GSheets, A1Range
+from sbankenssheets.gsheets.google_sheets import GSheet, A1Range, A1Cell
 
 
 def main():
@@ -24,13 +24,17 @@ def main():
                                             start_date='2018-08-01',
                                             length=1000)
 
-    gsheets = GSheets(urls.spreadsheet_id)
+    gsheets = GSheet(urls.spreadsheet_id)
 
     divided_transactions = divide_transactions(transactions)
 
     # Todo: Include savings
     # Start cells
-    expenses, income, *savings = gsh.find_date_cells(gsheets, 'Dummy', encoding=True)
+    expenses, income, *savings = gsh.find_cells(gsheets, 'Dummy', 'Dato')
+
+    # Subtract a column for encoding
+    expenses -= (1, 0)
+    income -= (1, 0)
 
     expenses_range = A1Range(expenses, range=(4, 0))
     income_range = A1Range(income, range=(4, 0))
@@ -74,7 +78,7 @@ def sbanken():
 
 def sheets():
     from sbankenssheets import urls
-    service = GSheets(urls.spreadsheet_id)
+    service = GSheet(urls.spreadsheet_id)
 
     values = [
         ['En dato', '55', 'beskrivelse', 'Kategori?'],
@@ -85,7 +89,7 @@ def sheets():
 
     from sbankenssheets.gsheets import google_sheets_helpers as gsh
 
-    expenses, income, savings, *_ = gsh.find_date_cells(service, 'Dummy')
+    expenses, income, savings, *_ = gsh.find_cells(service, 'Dummy')
 
     print(expenses, income, savings)
 

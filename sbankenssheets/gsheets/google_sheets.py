@@ -5,7 +5,7 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 
 
-class GSheets(object):
+class GSheet(object):
 
     @staticmethod
     def _create_authenticated_google_service():
@@ -19,7 +19,7 @@ class GSheets(object):
         return service
 
     def __init__(self, spreadsheet_id: str):
-        self.service = GSheets._create_authenticated_google_service()
+        self.service = GSheet._create_authenticated_google_service()
         self.spreadsheet_id = spreadsheet_id
 
     def get(self, range):
@@ -55,6 +55,9 @@ class GSheets(object):
 
 
 class A1Cell(object):
+    """
+
+    """
     def __init__(self, *args: Union['A1Cell', int, str]):
         self._base_col = ord('A')
         self._last_col = ord('Z')
@@ -108,6 +111,12 @@ class A1Cell(object):
 
         raise ValueError(f'Expected tuple of two ints: {value.__class__}')
 
+    def __sub__(self, value: Union[Tuple[int, int], List[int]]):
+        if isinstance(value, (tuple, list)) and len(value) == 2 and all(isinstance(x, int) for x in value):
+            return A1Cell(self._sub_from_col(value[0]), self._sub_from_row(value[1]))
+
+        raise ValueError(f'Expected tuple of two ints: {value.__class__}')
+
     def __str__(self) -> str:
         return idx_to_cell(*self._idxs)
 
@@ -121,8 +130,21 @@ class A1Cell(object):
             raise ValueError('Columns above Z are not supported.')
         return self._idxs[0] + value
 
+    def _sub_from_row(self, value):
+        if self._idxs[1] - value < 0:
+            raise ValueError('Cannot subtract from row 0')
+        return self._idxs[1] - value
+
+    def _sub_from_col(self, value):
+        if self._idxs[0] - value < 0:
+            raise ValueError('Cannot subtract from column A.')
+        return self._idxs[0] - value
+
 
 class A1Range(object):
+    """
+    A range of two :class:`.A1Cell`s
+    """
     def __init__(self, start: A1Cell, end_cell: A1Cell=None, range: Tuple[int, int]=None):
         if not end_cell and not range:
             raise ValueError('Must sepcify end_cell or range')

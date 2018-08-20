@@ -1,10 +1,18 @@
 from typing import List, Optional, Tuple
 
-from sbankenssheets.gsheets.google_sheets import GSheets, idx_to_cell, A1Cell
+from sbankenssheets.gsheets.google_sheets import GSheet, idx_to_cell, A1Cell
 
 
-def find_date_cells(service: GSheets, sheet: str, encoding: bool=False) -> Optional[List[A1Cell]]:
-    response = service.get(sheet)
+def find_cells(gsheet: GSheet, sheet: str, value: str) -> Optional[List[A1Cell]]:
+    """
+    Find cells with value in a GSheet.
+
+    :param gsheet: The GSheet spreadsheet to find the cells
+    :param sheet: The sheet within the GSheet spreadsheet
+    :param value: The cell value to be found
+    :return: If value is found, a list of A1Cells, else None
+    """
+    response = gsheet.get(sheet)
 
     values = response.get('values', [])
 
@@ -13,8 +21,8 @@ def find_date_cells(service: GSheets, sheet: str, encoding: bool=False) -> Optio
 
     # Find the position of cells with Dato
     for i, row in enumerate(values):
-        if 'Dato' in row:
-            return [A1Cell(j-1 if encoding else j, i) for j, x in enumerate(row) if x == 'Dato']
+        if value in row:
+            return [A1Cell(j, i) for j, cell in enumerate(row) if cell == value]
 
     return None
 
