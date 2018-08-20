@@ -1,4 +1,4 @@
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union, List, Dict, Iterable
 
 from sbankensheets.sbanken.constants import Category
 
@@ -109,7 +109,7 @@ def divide_transactions(transactions: List[Transaction], savingsAccount=None) ->
     return result
 
 
-def filter_transactions(first: List[Transaction], second: List[Transaction]):
+def filter_transactions(first: Iterable[Transaction], second: Iterable[Transaction]):
     second_data = list(map(lambda x: x._data, second))
     filtered = list(filter(lambda x: x._data not in second_data, first))
     return filtered
