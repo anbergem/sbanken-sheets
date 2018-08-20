@@ -1,7 +1,7 @@
 from pprint import pprint
 
 from sbankensheets.sbanken import Sbanken, Transaction, divide_transactions
-from sbankensheets.gsheets.google_sheets import GSheet, A1Range, A1Cell
+from sbankensheets.gsheets.google_sheets import GSheet, A1Range
 
 
 def main():

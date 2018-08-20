@@ -6,14 +6,17 @@ from oauth2client import file, client, tools
 
 
 class GSheet(object):
+    """
+    Class for handling request to Google Sheets.
+    """
 
     @staticmethod
     def _create_authenticated_google_service():
-        SCOPES = 'https://www.googleapis.com/auth/spreadsheets'
+        scope = 'https://www.googleapis.com/auth/spreadsheets'
         store = file.Storage('auth/token.json')
         creds = store.get()
         if not creds or creds.invalid:
-            flow = client.flow_from_clientsecrets('auth/credentials.json', SCOPES)
+            flow = client.flow_from_clientsecrets('auth/credentials.json', scope)
             creds = tools.run_flow(flow, store)
         service = build('sheets', 'v4', http=creds.authorize(Http()))
         return service
@@ -22,17 +25,33 @@ class GSheet(object):
         self.service = GSheet._create_authenticated_google_service()
         self.spreadsheet_id = spreadsheet_id
 
-    def get(self, range):
+    def get(self, range: 'A1Range') -> Dict:
+        """
+        Get the cell values within the specified range.
+        :param range: The range to retrieve the cell values from.
+        :return: A dict with the cell values stored in 'values'.
+        """
         return self.service.spreadsheets().values().get(
             spreadsheetId=self.spreadsheet_id,
             range=range
         ).execute()
 
     def append(self,
-               range: str,
+               range: 'A1Range',
                values: List[List[str]],
                value_input_option: str = 'USER_ENTERED',
                insert_data_option: str = 'OVERWRITE', ) -> Dict:
+        """
+        Append the values to a range in a google sheet.
+        :param range: The range to insert the values.
+        :param values: The values to be inserted
+        :param value_input_option: 'USER_ENTERED' or 'RAW', whether the input should be as if the user
+        entered the values or not.
+        :param insert_data_option: 'OVERWRITE' or 'INSERT_ROWS'. The former writes the new data over existing
+        data in the areas it is written. This still inserts rows at end of file. The latter inserts completely
+        new rows for each entry.
+        :return: A confirmation dict.
+        """
         return self.service.spreadsheets().values().append(
             spreadsheetId=self.spreadsheet_id,
             range=range,
@@ -44,7 +63,12 @@ class GSheet(object):
             }
         ).execute()
 
-    def get_batch(self, ranges: List[str]):
+    def get_batch(self, ranges: List[str]) -> List[Dict]:
+        """
+        Get a batch of cell values within the specified ranges.
+        :param ranges: The ranges to retrieve the cell values from.
+        :return: A list of dicts with the cell values stored in 'values'.
+        """
         return self.service.spreadsheets().values().getBatch(
             spreadsheetId=self.spreadsheet_id,
             ranges=ranges
@@ -56,9 +80,17 @@ class GSheet(object):
 
 class A1Cell(object):
     """
+    Class for representing the google A1 notation. See https://developers.google.com/sheets/api/guides/concepts.
 
+    An A1Cell can be creating in the following ways, all representing the cell C3:
+
+        >>> a = A1Cell('C3')
+        >>> b = A1Cell(2, 2)
+        >>> c = A1Cell([2, 2])
+        >>> d = A1Cell((2, 2))
+        >>> e = A1Cell(a)
     """
-    def __init__(self, *args: Union['A1Cell', int, str]):
+    def __init__(self, *args: Union['A1Cell', int, str, Union[Tuple[int, int], List[int]]]):
         self._base_col = ord('A')
         self._last_col = ord('Z')
         if len(args) == 1:
@@ -67,7 +99,7 @@ class A1Cell(object):
             elif isinstance(args[0], str):
                 self._initialize_from_str(args[0])
             elif all(isinstance(x, int) for x in args[0]):
-                self._initialize_from_col_row_idx(*args[0])
+                self._initialize_from_col_row_idx(*args)
         elif len(args) == 2 and all(isinstance(x, int) for x in args):
             self._initialize_from_col_row_idx(args)
         else:
@@ -143,7 +175,14 @@ class A1Cell(object):
 
 class A1Range(object):
     """
-    A range of two :class:`.A1Cell`s
+    Class for representing the google A1 notation range, using two A1Cells.
+
+    The A1Range can be created in the any of the following two ways, each representing the range C3:E6:
+
+        >>> c3 = A1Cell('C3')
+        >>> e6 = A1Cell('E6')
+        >>> c3e6 = A1Range(c3, e6)
+        >>> c3e6 = A1Range(c3, range=(2, 3))
     """
     def __init__(self, start: A1Cell, end_cell: A1Cell=None, range: Tuple[int, int]=None):
         if not end_cell and not range:

@@ -4,6 +4,9 @@ from sbankensheets.sbanken.constants import Category
 
 
 class Transaction(object):
+    """
+    Class representing a transaction obtained by Sbanken.
+    """
 
     def __init__(self, data):
         self._data = data

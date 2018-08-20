@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
@@ -9,6 +9,9 @@ from sbankensheets.sbanken.transaction import Transaction
 
 
 class Sbanken(object):
+    """
+    Class for handling HTTPS requests to the REST API from SBanken.
+    """
 
     @staticmethod
     def _create_authenticated_http_session(client_id: str, client_secret: str) -> requests.Session:
@@ -32,7 +35,15 @@ class Sbanken(object):
                          start_date=None,
                          end_date=None
                          ) -> List[Transaction]:
-
+        """
+        Get the transactions from the given account id
+        :param account_id: The account id to retrieve transactions from
+        :param index: The start index of the transactions.
+        :param length: The maximum number of transactions to return
+        :param start_date: The start date of the transactions. Defaults to 30 days before end date.
+        :param end_date: The end date of the transactions. Defaults to today's date.
+        :return: A list of Transaction objects.
+        """
         queries = {
             'index': str(index),
             'length': str(length),
@@ -55,7 +66,11 @@ class Sbanken(object):
 
         return transactions
 
-    def get_accounts(self):
+    def get_accounts(self) -> List[Dict]:
+        """
+        Retrieve account information of all accounts for Sbanken object.
+        :return: A list of dictionaries, each representing one account.
+        """
         response = self.session.get(
             "https://api.sbanken.no/bank/api/v1/Accounts",
             headers={'customerId': self.customer_id}
