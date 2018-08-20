@@ -60,49 +60,5 @@ def main():
         pprint(response)
 
 
-def sbanken():
-    from sbankensheets import private_api_keys
-
-    sbanken = Sbanken(private_api_keys.CLIENTID, private_api_keys.SECRET, private_api_keys.CUSTOMERID)
-
-    accounts = sbanken.get_accounts()
-
-    account = accounts[0]
-
-    transactions = sbanken.get_transactions(account['accountId'],
-                                            start_date='2018-08-01',
-                                            length=5,
-                                            index=5)
-
-    # filtered = filter(lambda x: x.category, transactions)
-    # for t in filtered:
-    #     print(f'text: {t.text}, amount: {t.amount}, category: {t.category}')
-    encoded = [x.encode() for x in transactions]
-    pprint([Transaction.decode(x) for x in encoded])
-    # with open('transactions.txt', 'w') as file:
-    #     for t in transactions:
-    #         file.write(f'{t.to_csv()}\n')
-
-
-def sheets():
-    from sbankensheets import urls
-    service = GSheet(urls.spreadsheet_id)
-
-    values = [
-        ['En dato', '55', 'beskrivelse', 'Kategori?'],
-        ['12/10/2018', '129', 'Netflix', 'TV-abonnoment']
-    ]
-
-    # response = service.append('Dummy!B5:E', values)
-
-    from sbankensheets.gsheets import google_sheets_helpers as gsh
-
-    expenses, income, savings, *_ = gsh.find_cells(service, 'Dummy', 'Dato')
-
-    print(expenses, income, savings)
-
-
 if __name__ == "__main__":
-    # sbanken()
-    # sheets()
     main()
