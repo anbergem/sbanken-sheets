@@ -187,16 +187,22 @@ class A1Range(object):
         >>> c3e6 = A1Range.from_cell(c3, (2, 3))
         >>> c3e6 = A1Range.from_str('C3:E6')
         >>> c3e6 = A1Range.from_str('C3', 'E6')
+
+    A range covering the remaining columns can be created in the following ways, each representing the range C3:C
+
+        >>> c3 = A1Cell('C3')
+        >>> c3c = A1Range(c3)
+        >>> c3c = A1Range.from_cell(c3)
     """
-    def __init__(self, start_cell: A1Cell, end_cell: A1Cell, sheet: str=None):
+    def __init__(self, start_cell: A1Cell, end_cell: A1Cell=None, sheet: str=None):
         self._range = (start_cell, end_cell)
         self._sheet = sheet
 
     @classmethod
-    def from_cell(cls, start_cell: A1Cell, range: Union[Tuple[int, int], List[int]], sheet: str=None):
-        if len(range) != 2 or not all(isinstance(x, int) for x in range):
+    def from_cell(cls, start_cell: A1Cell, range: Union[Tuple[int, int], List[int]]=None, sheet: str=None):
+        if range and (len(range) != 2 or not all(isinstance(x, int) for x in range)):
             raise ValueError('Range must be tuple/list of two ints')
-        return cls(start_cell, start_cell + range, sheet=sheet)
+        return cls(start_cell, start_cell + range if range else None, sheet=sheet)
 
     @classmethod
     def from_str(cls, string: str, end_cell: str=None, sheet: str=None):
@@ -216,7 +222,9 @@ class A1Range(object):
         self._sheet = sheet
 
     def __str__(self) -> str:
-        return '{}{}:{}'.format(f"'{self._sheet}'!" if self._sheet else '', *self._range)
+        return '{}{}:{}'.format(f"'{self._sheet}'!" if self._sheet else '',
+                                self._range[0],
+                                self._range[1] if self._range[1] else self._range[0][0])
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, A1Range):

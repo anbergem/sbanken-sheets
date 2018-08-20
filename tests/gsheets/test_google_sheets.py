@@ -183,11 +183,16 @@ class TestA1Range(unittest.TestCase):
         self.cell_b5 = A1Cell('B5')
         self.cell_c6 = A1Cell('C6')
         self.range_b5_c6 = A1Range(self.cell_b5, self.cell_c6)
+        self.range_b5_b = A1Range(self.cell_b5)
         self.range_b5_c6_w_sheet = A1Range(self.cell_b5, self.cell_c6, sheet='Test sheet')
 
     def test_from_cell(self):
         actual = A1Range.from_cell(self.cell_b5, range=(1, 1))
         self.assertEqual(actual, self.range_b5_c6)
+
+    def test_from_cell_all_cols(self):
+        actual = A1Range.from_cell(self.cell_b5)
+        self.assertEqual(actual, self.range_b5_b)
 
     def test_from_str_range(self):
         actual = A1Range.from_str('B5:C6')
@@ -203,6 +208,9 @@ class TestA1Range(unittest.TestCase):
 
     def test_str_format(self):
         self.assertEqual(str(self.range_b5_c6), 'B5:C6')
+
+    def test_str_format_all_cols(self):
+        self.assertEqual(str(self.range_b5_b), 'B5:B')
 
     def test_str_format_with_sheet(self):
         self.assertEqual(str(self.range_b5_c6_w_sheet), "'{}'!{}:{}".format(self.range_b5_c6_w_sheet.sheet,
