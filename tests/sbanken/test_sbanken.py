@@ -1,18 +1,18 @@
 import unittest
 import unittest.mock as mock
 
-from sbankenssheets.sbanken import Sbanken
+from sbankensheets.sbanken import Sbanken
 
 
 class TestSbanken(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
-        mock.patch('sbankenssheets.sbanken.sbanken.BackendApplicationClient').start()
-        mock.patch('sbankenssheets.sbanken.sbanken.OAuth2Session').start()
+        mock.patch('sbankensheets.sbanken.sbanken.BackendApplicationClient').start()
+        mock.patch('sbankensheets.sbanken.sbanken.OAuth2Session').start()
         mock.patch('urllib.parse').start()
         mock.patch('requests.Session').start()
-        self.Transaction = mock.patch('sbankenssheets.sbanken.sbanken.Transaction').start()
+        self.Transaction = mock.patch('sbankensheets.sbanken.sbanken.Transaction').start()
 
         self.sbanken = Sbanken('test-client-id', 'test-secret', 'test-customer-id')
 

@@ -5,7 +5,7 @@ from requests_oauthlib import OAuth2Session
 import urllib.parse
 import requests
 
-from sbankenssheets.sbanken.transaction import Transaction
+from sbankensheets.sbanken.transaction import Transaction
 
 
 class Sbanken(object):

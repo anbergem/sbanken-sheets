@@ -1,6 +1,6 @@
 from typing import Optional, Union, List, Dict
 
-from sbankenssheets.sbanken.constants import Category
+from sbankensheets.sbanken.constants import Category
 
 
 class Transaction(object):
@@ -36,7 +36,7 @@ class Transaction(object):
         self._category = value
 
     def categorize(self) -> Optional[str]:
-        from sbankenssheets.sbanken.constants import transaction_keywords
+        from sbankensheets.sbanken.constants import transaction_keywords
 
         for keyword in transaction_keywords:
             if 'transaction_type' in keyword and keyword['transaction_type'].lower() == self.transaction_type.lower():

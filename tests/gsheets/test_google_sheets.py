@@ -1,18 +1,18 @@
 import unittest
 import unittest.mock as mock
 
-from sbankenssheets.gsheets import GSheet, A1Cell, A1Range
+from sbankensheets.gsheets import GSheet, A1Cell, A1Range
 
 
 class TestGSheet(unittest.TestCase):
 
     def setUp(self):
         super().setUp()
-        mock.patch('sbankenssheets.gsheets.google_sheets.build').start()
-        mock.patch('sbankenssheets.gsheets.google_sheets.Http').start()
-        mock.patch('sbankenssheets.gsheets.google_sheets.file').start()
-        mock.patch('sbankenssheets.gsheets.google_sheets.client').start()
-        mock.patch('sbankenssheets.gsheets.google_sheets.tools').start()
+        mock.patch('sbankensheets.gsheets.google_sheets.build').start()
+        mock.patch('sbankensheets.gsheets.google_sheets.Http').start()
+        mock.patch('sbankensheets.gsheets.google_sheets.file').start()
+        mock.patch('sbankensheets.gsheets.google_sheets.client').start()
+        mock.patch('sbankensheets.gsheets.google_sheets.tools').start()
 
         self.gsheets = GSheet('some-id')
 
