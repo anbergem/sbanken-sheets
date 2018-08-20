@@ -1,7 +1,7 @@
 from pprint import pprint
 
 from sbankensheets.sbanken import Sbanken, Transaction, divide_transactions, filter_transactions
-from sbankensheets.gsheets.google_sheets import GSheet, A1Range
+from sbankensheets.gsheets import GSheet, A1Range
 
 
 def main():
@@ -97,7 +97,7 @@ def sheets():
 
     from sbankensheets.gsheets import google_sheets_helpers as gsh
 
-    expenses, income, savings, *_ = gsh.find_cells(service, 'Dummy')
+    expenses, income, savings, *_ = gsh.find_cells(service, 'Dummy', 'Dato')
 
     print(expenses, income, savings)
 

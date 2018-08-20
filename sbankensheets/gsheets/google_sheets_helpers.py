@@ -1,6 +1,7 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
-from sbankensheets.gsheets.google_sheets import GSheet, idx_to_cell, A1Cell
+from sbankensheets.gsheets.google_sheets import GSheet
+from sbankensheets.gsheets.a1 import A1Cell
 
 
 def find_cells(gsheet: GSheet, sheet: str, value: str) -> Optional[List[A1Cell]]:
