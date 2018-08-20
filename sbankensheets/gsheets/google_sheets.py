@@ -228,7 +228,7 @@ def idx_to_cell(col: int, row: int) -> str:
 def cell_to_idx(cell: str) -> Tuple[int, int]:
     import re
 
-    match = re.match(r'(^[a-zA-Z]+)([0-9]+$)', cell)
+    match = re.match(r'(^[a-zA-Z])([0-9]+$)', cell)
 
     if not match:
         raise ValueError(f'Invalid cell: {cell}')
