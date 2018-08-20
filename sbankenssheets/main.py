@@ -24,26 +24,26 @@ def main():
                                             start_date='2018-08-01',
                                             length=1000)
 
-    service = GSheets(urls.spreadsheet_id)
+    gsheets = GSheets(urls.spreadsheet_id)
 
     divided_transactions = divide_transactions(transactions)
 
     # Todo: Include savings
     # Start cells
-    expenses, income, *savings = gsh.find_date_cells(service, 'Dummy', encoding=True)
+    expenses, income, *savings = gsh.find_date_cells(gsheets, 'Dummy', encoding=True)
 
     expenses_range = A1Range(expenses, range=(4, 0))
     income_range = A1Range(income, range=(4, 0))
 
     # Append expenses
     values = list(map(lambda t: t.to_sheets_row(encode=True), divided_transactions['expenses']))
-    response = service.append(f'Dummy!{expenses_range}', list(reversed(values)))
+    response = gsheets.append(f'Dummy!{expenses_range}', list(reversed(values)))
 
     pprint(response)
 
     # Append income
     values = list(map(lambda t: t.to_sheets_row(encode=True), divided_transactions['income']))
-    response = service.append(f'Dummy!{income_range}', list(reversed(values)))
+    response = gsheets.append(f'Dummy!{income_range}', list(reversed(values)))
 
     pprint(response)
 
