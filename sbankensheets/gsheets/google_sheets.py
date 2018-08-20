@@ -33,7 +33,7 @@ class GSheet(object):
         """
         return self.service.spreadsheets().values().get(
             spreadsheetId=self.spreadsheet_id,
-            range=range
+            range=str(range)
         ).execute()
 
     def append(self,
@@ -54,16 +54,16 @@ class GSheet(object):
         """
         return self.service.spreadsheets().values().append(
             spreadsheetId=self.spreadsheet_id,
-            range=range,
+            range=str(range),
             valueInputOption=value_input_option,
             insertDataOption=insert_data_option,
             body={
-                'range': range,
+                'range': str(range),
                 'values': values
             }
         ).execute()
 
-    def get_batch(self, ranges) -> List[Dict]:
+    def get_batch(self, ranges) -> Dict:
         """
         Get a batch of cell values within the specified ranges.
         :param ranges: The ranges to retrieve the cell values from.

@@ -9,6 +9,9 @@ class Transaction(object):
     """
 
     def __init__(self, data):
+        for keyword in ('transactionId', 'source', 'reservationType'):
+            if keyword in data:
+                del data[keyword]
         self._data = data
         self.category = self.categorize()
 
@@ -104,3 +107,9 @@ def divide_transactions(transactions: List[Transaction], savingsAccount=None) ->
             result['income'] = result.get('income', []) + [transaction]
 
     return result
+
+
+def filter_transactions(first: List[Transaction], second: List[Transaction]):
+    second_data = list(map(lambda x: x._data, second))
+    filtered = list(filter(lambda x: x._data not in second_data, first))
+    return filtered
