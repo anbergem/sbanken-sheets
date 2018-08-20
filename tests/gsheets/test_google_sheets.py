@@ -183,23 +183,30 @@ class TestA1Range(unittest.TestCase):
         self.cell_b5 = A1Cell('B5')
         self.cell_c6 = A1Cell('C6')
         self.range_b5_c6 = A1Range(self.cell_b5, self.cell_c6)
+        self.range_b5_c6_w_sheet = A1Range(self.cell_b5, self.cell_c6, sheet='Test sheet')
 
-    def test_init_with_range(self):
-        actual = A1Range(self.cell_b5, range=(1, 1))
+    def test_from_cell(self):
+        actual = A1Range.from_cell(self.cell_b5, range=(1, 1))
         self.assertEqual(actual, self.range_b5_c6)
 
-    def test_init_with_one_arument_raise_value_error(self):
-        self.assertRaises(ValueError, A1Range, self.cell_b5)
+    def test_from_str_range(self):
+        actual = A1Range.from_str('B5:C6')
+        self.assertEqual(actual, self.range_b5_c6)
 
-    def test_init_with_end_cell_and_range_raise_value_error(self):
-        self.assertRaises(ValueError,
-                          A1Range,
-                          self.cell_b5,
-                          end_cell=self.cell_c6,
-                          range=(1, 1))
+    def test_from_str_range_lower_case(self):
+        actual = A1Range.from_str('b5:c6')
+        self.assertEqual(actual, self.range_b5_c6)
+
+    def test_from_two_str(self):
+        actual = A1Range.from_str('B5', 'C6')
+        self.assertEqual(actual, self.range_b5_c6)
 
     def test_str_format(self):
         self.assertEqual(str(self.range_b5_c6), 'B5:C6')
+
+    def test_str_format_with_sheet(self):
+        self.assertEqual(str(self.range_b5_c6_w_sheet), "'{}'!{}:{}".format(self.range_b5_c6_w_sheet.sheet,
+                                                                            *self.range_b5_c6_w_sheet._range))
 
     def test_get_0_idx(self):
         actual = self.range_b5_c6[0]
@@ -208,4 +215,3 @@ class TestA1Range(unittest.TestCase):
     def test_get_1_idx(self):
         actual = self.range_b5_c6[1]
         self.assertEqual(actual, self.cell_c6)
-

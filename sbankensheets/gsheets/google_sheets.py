@@ -178,23 +178,34 @@ class A1Range(object):
     """
     Class for representing the google A1 notation range, using two A1Cells.
 
-    The A1Range can be created in the any of the following two ways, each representing the range C3:E6:
+    The A1Range can be created in the any of the following ways, each representing the range C3:E6:
 
         >>> c3 = A1Cell('C3')
         >>> e6 = A1Cell('E6')
         >>> c3e6 = A1Range(c3, e6)
-        >>> c3e6 = A1Range(c3, range=(2, 3))
+        >>> c3e6 = A1Range(c3, c3 + (2, 3))
+        >>> c3e6 = A1Range.from_cell(c3, (2, 3))
+        >>> c3e6 = A1Range.from_str('C3:E6')
+        >>> c3e6 = A1Range.from_str('C3', 'E6')
     """
-    def __init__(self, start: A1Cell, end_cell: A1Cell=None, range: Tuple[int, int]=None, sheet: str=None):
-        if not end_cell and not range:
-            raise ValueError('Must sepcify end_cell or range')
-        elif end_cell and range:
-            raise ValueError('Cannot specify both end_cell and range')
-        elif end_cell:
-            self._range = (start, end_cell)
-        elif range:
-            self._range = (start, A1Cell(start+range))
+    def __init__(self, start_cell: A1Cell, end_cell: A1Cell, sheet: str=None):
+        self._range = (start_cell, end_cell)
         self._sheet = sheet
+
+    @classmethod
+    def from_cell(cls, start_cell: A1Cell, range: Union[Tuple[int, int], List[int]], sheet: str=None):
+        if len(range) != 2 or not all(isinstance(x, int) for x in range):
+            raise ValueError('Range must be tuple/list of two ints')
+        return cls(start_cell, start_cell + range, sheet=sheet)
+
+    @classmethod
+    def from_str(cls, string: str, end_cell: str=None, sheet: str=None):
+        if not end_cell:
+            cells = string.split(":")
+            if len(cells) != 2:
+                raise ValueError('Cell not in format <start_cell>:<end_cell>')
+            return cls(A1Cell(cells[0]), A1Cell(cells[1]))
+        return cls(A1Cell(string), A1Cell(end_cell), sheet=sheet)
 
     @property
     def sheet(self):

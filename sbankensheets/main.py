@@ -36,8 +36,8 @@ def main():
     expenses_cell -= (1, 0)
     income_cell -= (1, 0)
 
-    expenses_range = A1Range(expenses_cell, range=(4, 0), sheet='Dummy')
-    income_range = A1Range(income_cell, range=(4, 0), sheet='Dummy')
+    expenses_range = A1Range.from_cell(expenses_cell, range=(4, 0), sheet='Dummy')
+    income_range = A1Range.from_cell(income_cell, range=(4, 0), sheet='Dummy')
 
     # Append expenses
     values = list(map(lambda t: t.to_sheets_row(encode=True), divided_transactions['expenses']))
