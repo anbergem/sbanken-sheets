@@ -42,10 +42,12 @@ class TestSbanken(unittest.TestCase):
             f'https://api.sbanken.no/bank/api/v1/Transactions/{account_id}',
             headers={
                 'customerId': self.sbanken.customer_id,
+            },
+            params={
                 'index': str(index),
                 'length': str(length),
-                'start_date': start_date,
-                'end_date': end_date
+                'startDate': start_date,
+                'endDate': end_date
             }
         )
 
