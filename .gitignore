@@ -108,7 +108,6 @@ venv.bak/
 
 # Project specific
 sbankenssheets/private_api_keys.py
-
 sbankenssheets/transactions.txt
-sbankenssheets/auth/credentials.json
-sbankenssheets/auth/token.json
+
+auth
