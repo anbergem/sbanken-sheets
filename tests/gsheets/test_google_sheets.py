@@ -68,7 +68,7 @@ class TestGSheet(unittest.TestCase):
         ranges = ['A1:C5', 'A5:C7']
         self.gsheets.get_batch(ranges)
 
-        self.gsheets.service.spreadsheets().values().getBatch.assert_called_once_with(
+        self.gsheets.service.spreadsheets().values().batchGet.assert_called_once_with(
             ranges=ranges,
             spreadsheetId=self.gsheets.spreadsheet_id
         )
@@ -77,7 +77,7 @@ class TestGSheet(unittest.TestCase):
         ranges = ['A1:C5', 'A5:C7']
         self.gsheets.get_batch(ranges)
 
-        self.gsheets.service.spreadsheets().values().getBatch().execute.assert_called_once()
+        self.gsheets.service.spreadsheets().values().batchGet().execute.assert_called_once()
 
 
 class TestA1Cell(unittest.TestCase):

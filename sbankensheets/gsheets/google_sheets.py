@@ -63,15 +63,15 @@ class GSheet(object):
             }
         ).execute()
 
-    def get_batch(self, ranges: List[str]) -> List[Dict]:
+    def get_batch(self, ranges) -> List[Dict]:
         """
         Get a batch of cell values within the specified ranges.
         :param ranges: The ranges to retrieve the cell values from.
         :return: A list of dicts with the cell values stored in 'values'.
         """
-        return self.service.spreadsheets().values().getBatch(
+        return self.service.spreadsheets().values().batchGet(
             spreadsheetId=self.spreadsheet_id,
-            ranges=ranges
+            ranges=[str(r) for r in ranges]
         ).execute()
 
     def clear(self):
