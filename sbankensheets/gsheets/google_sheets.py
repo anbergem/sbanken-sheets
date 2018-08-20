@@ -185,7 +185,7 @@ class A1Range(object):
         >>> c3e6 = A1Range(c3, e6)
         >>> c3e6 = A1Range(c3, range=(2, 3))
     """
-    def __init__(self, start: A1Cell, end_cell: A1Cell=None, range: Tuple[int, int]=None):
+    def __init__(self, start: A1Cell, end_cell: A1Cell=None, range: Tuple[int, int]=None, sheet: str=None):
         if not end_cell and not range:
             raise ValueError('Must sepcify end_cell or range')
         elif end_cell and range:
@@ -194,15 +194,24 @@ class A1Range(object):
             self._range = (start, end_cell)
         elif range:
             self._range = (start, A1Cell(start+range))
+        self._sheet = sheet
+
+    @property
+    def sheet(self):
+        return self._sheet
+
+    @sheet.setter
+    def sheet(self, sheet):
+        self._sheet = sheet
 
     def __str__(self) -> str:
-        return '{}:{}'.format(*self._range)
+        return '{}{}:{}'.format(f'{self._sheet}!' if self._sheet else '', *self._range)
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, A1Range):
             return False
         else:
-            return all(x == y for x, y in zip(self._range, other._range))
+            return self._sheet == other._sheet and all(x == y for x, y in zip(self._range, other._range))
 
     def __getitem__(self, key: int) -> A1Cell:
         if 0 > key > 1:
