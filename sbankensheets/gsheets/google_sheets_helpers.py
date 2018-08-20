@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Iterable
 
 from sbankensheets.gsheets.google_sheets import GSheet
 from sbankensheets.gsheets.a1 import A1Cell, A1Range
@@ -32,3 +32,7 @@ def find_transaction_range(start_cell: str, encoding: bool=True) -> str:
     start_col = start_cell[0]
     end_col = chr(ord(start_col) + 4 if encoding else 3)
     return f'{start_cell}:{end_col}'
+
+
+def filter_manual_cell_values(cell_values) -> Iterable:
+    return filter(lambda x: not (x[0] == '.'), cell_values)

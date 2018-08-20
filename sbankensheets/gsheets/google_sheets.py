@@ -1,14 +1,10 @@
-from typing import List, Dict, Iterable
+from typing import List, Dict
 
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
 
 from sbankensheets.gsheets.a1 import A1Range
-
-
-def filter_manual_cell_values(cell_values) -> Iterable:
-    return filter(lambda x: not (x[0] == '.'), cell_values)
 
 
 class GSheet(object):
