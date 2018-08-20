@@ -30,24 +30,24 @@ def main():
 
     # Todo: Include savings
     # Start cells
-    expenses, income, *savings = gsh.find_cells(gsheets, 'Dummy', 'Dato')
+    expenses_cell, income_cell, *savings_cell = gsh.find_cells(gsheets, 'Dummy', 'Dato')
 
     # Subtract a column for encoding
-    expenses -= (1, 0)
-    income -= (1, 0)
+    expenses_cell -= (1, 0)
+    income_cell -= (1, 0)
 
-    expenses_range = A1Range(expenses, range=(4, 0))
-    income_range = A1Range(income, range=(4, 0))
+    expenses_range = A1Range(expenses_cell, range=(4, 0), sheet='Dummy')
+    income_range = A1Range(income_cell, range=(4, 0), sheet='Dummy')
 
     # Append expenses
     values = list(map(lambda t: t.to_sheets_row(encode=True), divided_transactions['expenses']))
-    response = gsheets.append(f'Dummy!{expenses_range}', list(reversed(values)))
+    response = gsheets.append(expenses_range, list(reversed(values)))
 
     pprint(response)
 
     # Append income
     values = list(map(lambda t: t.to_sheets_row(encode=True), divided_transactions['income']))
-    response = gsheets.append(f'Dummy!{income_range}', list(reversed(values)))
+    response = gsheets.append(income_range, list(reversed(values)))
 
     pprint(response)
 
