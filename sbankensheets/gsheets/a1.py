@@ -116,8 +116,20 @@ class A1Range(object):
         >>> c3 = A1Cell('C3')
         >>> c3c = A1Range(c3)
         >>> c3c = A1Range.from_cell(c3)
+
+    A sheet may also be added, specifying which sheet in the spreadsheet to target:
+
+        >>> c3e6 = A1Range.from_str('C3:E6', sheet='My Sheet')
+    resulting in the A1 notation 'My Sheet'!C3:E6
+
+    In case the desired range is an entire sheet, only the sheet may be used as parameter:
+
+        >>> c3e6 = A1Range(sheet='My Sheet')
+    resulting in the A1 notation 'My Sheet'
     """
-    def __init__(self, start_cell: A1Cell, end_cell: A1Cell=None, sheet: str=None):
+    def __init__(self, start_cell: A1Cell=None, end_cell: A1Cell=None, sheet: str=None):
+        if end_cell and not start_cell:
+            raise ValueError('Start cell must be specified if end cell is.')
         self._range = (start_cell, end_cell)
         self._sheet = sheet
 
@@ -145,6 +157,8 @@ class A1Range(object):
         self._sheet = sheet
 
     def __str__(self) -> str:
+        if all(not cell for cell in self._range):
+            return f"'{self._sheet}'"
         return '{}{}:{}'.format(f"'{self._sheet}'!" if self._sheet else '',
                                 self._range[0],
                                 self._range[1] if self._range[1] else self._range[0][0])

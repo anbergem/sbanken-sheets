@@ -1,7 +1,7 @@
 from typing import List, Optional
 
 from sbankensheets.gsheets.google_sheets import GSheet
-from sbankensheets.gsheets.a1 import A1Cell
+from sbankensheets.gsheets.a1 import A1Cell, A1Range
 
 
 def find_cells(gsheet: GSheet, sheet: str, value: str) -> Optional[List[A1Cell]]:
@@ -13,7 +13,7 @@ def find_cells(gsheet: GSheet, sheet: str, value: str) -> Optional[List[A1Cell]]
     :param value: The cell value to be found
     :return: If value is found, a list of A1Cells, else None
     """
-    response = gsheet.get(sheet)
+    response = gsheet.get(A1Range(sheet=sheet))
 
     values = response.get('values', [])
 
