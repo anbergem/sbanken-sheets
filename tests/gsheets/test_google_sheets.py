@@ -24,7 +24,7 @@ class TestGSheets(unittest.TestCase):
         range = 'A1:C5'
         self.gsheets.get(range)
 
-        self.gsheets.service.spreadsheets().values().get.assert_called_with(
+        self.gsheets.service.spreadsheets().values().get.assert_called_once_with(
             range=range,
             spreadsheetId=self.gsheets.spreadsheet_id
         )
@@ -43,7 +43,7 @@ class TestGSheets(unittest.TestCase):
             values=values
         )
 
-        self.gsheets.service.spreadsheets().values().append.assert_called_with(
+        self.gsheets.service.spreadsheets().values().append.assert_called_once_with(
             spreadsheetId=self.gsheets.spreadsheet_id,
             range=range,
             valueInputOption='USER_ENTERED',
@@ -68,7 +68,7 @@ class TestGSheets(unittest.TestCase):
         ranges = ['A1:C5', 'A5:C7']
         self.gsheets.get_batch(ranges)
 
-        self.gsheets.service.spreadsheets().values().getBatch.assert_called_with(
+        self.gsheets.service.spreadsheets().values().getBatch.assert_called_once_with(
             ranges=ranges,
             spreadsheetId=self.gsheets.spreadsheet_id
         )
