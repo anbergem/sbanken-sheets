@@ -22,8 +22,7 @@ def main():
 
     transactions = sbanken.get_transactions(account['accountId'],
                                             start_date='2018-08-01',
-                                            length=5,
-                                            index=5)
+                                            length=1000)
 
     service = GSheets(urls.spreadsheet_id)
 
