@@ -205,7 +205,7 @@ class A1Range(object):
         self._sheet = sheet
 
     def __str__(self) -> str:
-        return '{}{}:{}'.format(f'{self._sheet}!' if self._sheet else '', *self._range)
+        return '{}{}:{}'.format(f"'{self._sheet}'!" if self._sheet else '', *self._range)
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, A1Range):
