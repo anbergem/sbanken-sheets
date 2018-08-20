@@ -85,10 +85,11 @@ class A1Cell(object):
     An A1Cell can be creating in the following ways, all representing the cell C3:
 
         >>> a = A1Cell('C3')
-        >>> b = A1Cell(2, 2)
-        >>> c = A1Cell([2, 2])
-        >>> d = A1Cell((2, 2))
-        >>> e = A1Cell(a)
+        >>> b = A1Cell('c3')
+        >>> c = A1Cell(2, 2)
+        >>> d = A1Cell([2, 2])
+        >>> e = A1Cell((2, 2))
+        >>> f = A1Cell(a)
     """
     def __init__(self, *args: Union['A1Cell', int, str, Union[Tuple[int, int], List[int]]]):
         self._base_col = ord('A')
@@ -227,7 +228,7 @@ def idx_to_cell(col: int, row: int) -> str:
 def cell_to_idx(cell: str) -> Tuple[int, int]:
     import re
 
-    match = re.match(r'(^[A-Z]+)([0-9]+$)', cell)
+    match = re.match(r'(^[a-zA-Z]+)([0-9]+$)', cell)
 
     if not match:
         raise ValueError(f'Invalid cell: {cell}')
@@ -249,7 +250,7 @@ def col_to_index(col: 'str') -> int:
     if len(col) > 1:
         raise ValueError(f'Columns above Z are not supported: {col}')
 
-    return ord(col) - ord('A')
+    return ord(col.upper()) - ord('A')
 
 
 if __name__ == '__main__':
