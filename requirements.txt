@@ -1,6 +1,8 @@
 cachetools==2.1.0
 certifi==2018.8.13
 chardet==3.0.4
+codecov==2.0.15
+coverage==4.5.1
 google-api-python-client==1.7.4
 google-auth==1.5.1
 google-auth-httplib2==0.0.3
