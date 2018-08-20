@@ -43,8 +43,8 @@ def main():
 
         transaction_enc_values = gsheets.get(transaction_encodings_range)['values']
 
-        gs_transaction = map(lambda x: sb.Transaction.decode(x[0]), filter(lambda x: not (x[0] == '.'),
-                                                                        transaction_enc_values))
+        gs_automatic_cell_values = gs.filter_manual_cell_values(transaction_enc_values)
+        gs_transaction = sb.cell_values_to_transactions(gs_automatic_cell_values)
 
         filtered_transactions = sb.filter_transactions(divided_transactions[name], gs_transaction)
 

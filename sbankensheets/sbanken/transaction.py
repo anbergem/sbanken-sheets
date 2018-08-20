@@ -113,3 +113,7 @@ def filter_transactions(first: Iterable[Transaction], second: Iterable[Transacti
     second_data = list(map(lambda x: x._data, second))
     filtered = list(filter(lambda x: x._data not in second_data, first))
     return filtered
+
+
+def cell_values_to_transactions(cell_values):
+    return map(lambda x: Transaction.decode(x[0]), cell_values)
