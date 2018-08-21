@@ -55,25 +55,16 @@ class TestTransaction(unittest.TestCase):
 
     def test_to_sheets_row_no_encoding(self):
         trans = self.transaction
-        expected = [
-            trans.extract_date(),
-            str(trans.amount).replace(".", ","),
-            trans.text,
-            "",
-        ]
+        amount = str(-trans.amount).replace(".", ",")
+        expected = [trans.extract_date(), amount, trans.text, ""]
         actual = self.transaction.to_sheets_row()
 
         self.assertEqual(actual, expected)
 
     def test_to_sheets_row_with_encoding(self):
         trans = self.transaction
-        expected = [
-            trans.encode(),
-            trans.extract_date(),
-            str(trans.amount).replace(".", ","),
-            trans.text,
-            "",
-        ]
+        amount = str(-trans.amount).replace(".", ",")
+        expected = [trans.encode(), trans.extract_date(), amount, trans.text, ""]
         actual = self.transaction.to_sheets_row(encode=True)
 
         self.assertEqual(actual, expected)

@@ -67,7 +67,7 @@ class Transaction(object):
         result = [self.encode()] if encode else []
         return result + [
             self.extract_date(),
-            str(self.amount).replace(".", ","),
+            str(self.amount if self.amount > 0 else -self.amount).replace(".", ","),
             self.text,
             self.category.value if self.category else "",
         ]
