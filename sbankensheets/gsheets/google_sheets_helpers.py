@@ -15,7 +15,7 @@ def find_cells(gsheet: GSheet, sheet: str, value: str) -> Optional[List[A1Cell]]
     """
     response = gsheet.get(A1Range(sheet=sheet))
 
-    values = response.get('values', [])
+    values = response.get("values", [])
 
     if not values:
         return None
@@ -28,11 +28,11 @@ def find_cells(gsheet: GSheet, sheet: str, value: str) -> Optional[List[A1Cell]]
     return None
 
 
-def find_transaction_range(start_cell: str, encoding: bool=True) -> str:
+def find_transaction_range(start_cell: str, encoding: bool = True) -> str:
     start_col = start_cell[0]
     end_col = chr(ord(start_col) + 4 if encoding else 3)
-    return f'{start_cell}:{end_col}'
+    return f"{start_cell}:{end_col}"
 
 
 def filter_manual_cell_values(cell_values) -> Iterable:
-    return filter(lambda x: not (x[0] == '.'), cell_values)
+    return filter(lambda x: not (x[0] == "."), cell_values)

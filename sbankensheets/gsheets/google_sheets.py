@@ -14,13 +14,13 @@ class GSheet(object):
 
     @staticmethod
     def _create_authenticated_google_service():
-        scope = 'https://www.googleapis.com/auth/spreadsheets'
-        store = file.Storage('auth/token.json')
+        scope = "https://www.googleapis.com/auth/spreadsheets"
+        store = file.Storage("auth/token.json")
         creds = store.get()
         if not creds or creds.invalid:
-            flow = client.flow_from_clientsecrets('auth/credentials.json', scope)
+            flow = client.flow_from_clientsecrets("auth/credentials.json", scope)
             creds = tools.run_flow(flow, store)
-        service = build('sheets', 'v4', http=creds.authorize(Http()))
+        service = build("sheets", "v4", http=creds.authorize(Http()))
         return service
 
     def __init__(self, spreadsheet_id: str):
@@ -33,16 +33,20 @@ class GSheet(object):
         :param range: The range to retrieve the cell values from.
         :return: A dict with the cell values stored in 'values'.
         """
-        return self.service.spreadsheets().values().get(
-            spreadsheetId=self.spreadsheet_id,
-            range=str(range)
-        ).execute()
+        return (
+            self.service.spreadsheets()
+            .values()
+            .get(spreadsheetId=self.spreadsheet_id, range=str(range))
+            .execute()
+        )
 
-    def append(self,
-               range: A1Range,
-               values: List[List[str]],
-               value_input_option: str = 'USER_ENTERED',
-               insert_data_option: str = 'OVERWRITE', ) -> Dict:
+    def append(
+        self,
+        range: A1Range,
+        values: List[List[str]],
+        value_input_option: str = "USER_ENTERED",
+        insert_data_option: str = "OVERWRITE",
+    ) -> Dict:
         """
         Append the values to a range in a google sheet.
         :param range: The range to insert the values.
@@ -54,16 +58,18 @@ class GSheet(object):
         new rows for each entry.
         :return: A confirmation dict.
         """
-        return self.service.spreadsheets().values().append(
-            spreadsheetId=self.spreadsheet_id,
-            range=str(range),
-            valueInputOption=value_input_option,
-            insertDataOption=insert_data_option,
-            body={
-                'range': str(range),
-                'values': values
-            }
-        ).execute()
+        return (
+            self.service.spreadsheets()
+            .values()
+            .append(
+                spreadsheetId=self.spreadsheet_id,
+                range=str(range),
+                valueInputOption=value_input_option,
+                insertDataOption=insert_data_option,
+                body={"range": str(range), "values": values},
+            )
+            .execute()
+        )
 
     def get_batch(self, ranges) -> Dict:
         """
@@ -71,10 +77,14 @@ class GSheet(object):
         :param ranges: The ranges to retrieve the cell values from.
         :return: A list of dicts with the cell values stored in 'values'.
         """
-        return self.service.spreadsheets().values().batchGet(
-            spreadsheetId=self.spreadsheet_id,
-            ranges=[str(r) for r in ranges]
-        ).execute()
+        return (
+            self.service.spreadsheets()
+            .values()
+            .batchGet(
+                spreadsheetId=self.spreadsheet_id, ranges=[str(r) for r in ranges]
+            )
+            .execute()
+        )
 
     def clear(self):
         raise NotImplementedError

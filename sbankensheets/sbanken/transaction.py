@@ -9,7 +9,7 @@ class Transaction(object):
     """
 
     def __init__(self, data):
-        for keyword in ('transactionId', 'source', 'reservationType'):
+        for keyword in ("transactionId", "source", "reservationType"):
             if keyword in data:
                 del data[keyword]
         self._data = data
@@ -23,15 +23,15 @@ class Transaction(object):
 
     @property
     def amount(self) -> float:
-        return self._data['amount']
+        return self._data["amount"]
 
     @property
     def transaction_type(self):
-        return self._data['transactionType']
+        return self._data["transactionType"]
 
     @property
     def text(self) -> str:
-        return self._data['text']
+        return self._data["text"]
 
     @property
     def category(self) -> Optional[Category]:
@@ -45,41 +45,48 @@ class Transaction(object):
         from sbankensheets.sbanken.constants import transaction_keywords
 
         for keyword in transaction_keywords:
-            if 'transaction_type' in keyword and keyword['transaction_type'].lower() == self.transaction_type.lower():
-                return keyword['category']
-            elif keyword['description'].lower() in self.text.lower():
-                return keyword['category']
+            if (
+                "transaction_type" in keyword
+                and keyword["transaction_type"].lower() == self.transaction_type.lower()
+            ):
+                return keyword["category"]
+            elif keyword["description"].lower() in self.text.lower():
+                return keyword["category"]
 
         return None
 
     def to_csv(self) -> str:
-        return ','.join([self.text, str(self.amount), self.category.value if self.category else ''])
+        return ",".join(
+            [self.text, str(self.amount), self.category.value if self.category else ""]
+        )
 
-    def to_sheets_row(self, encode: bool=False) -> List[str]:
+    def to_sheets_row(self, encode: bool = False) -> List[str]:
         result = [self.encode()] if encode else []
-        return result + [self.extract_date(),
-                         str(self.amount).replace('.', ','),
-                         self.text,
-                         self.category.value if self.category else '']
+        return result + [
+            self.extract_date(),
+            str(self.amount).replace(".", ","),
+            self.text,
+            self.category.value if self.category else "",
+        ]
 
     def extract_date(self) -> str:
         import dateutil.parser as dp
 
         data = self._data
 
-        if data['cardDetailsSpecified']:
-            time = dp.parse(data['cardDetails']['purchaseDate'])
+        if data["cardDetailsSpecified"]:
+            time = dp.parse(data["cardDetails"]["purchaseDate"])
         else:
-            time = dp.parse(data['accountingDate'])
+            time = dp.parse(data["accountingDate"])
 
         return time.date().isoformat()
 
     @staticmethod
-    def decode(encoded_str: str) -> 'Transaction':
+    def decode(encoded_str: str) -> "Transaction":
         import base64
         import pickle
 
-        encoded_bytes = encoded_str.encode('utf-8')
+        encoded_bytes = encoded_str.encode("utf-8")
         data_str = base64.urlsafe_b64decode(encoded_bytes)
         data = pickle.loads(data_str)
 
@@ -91,20 +98,22 @@ class Transaction(object):
 
         data_str = pickle.dumps(self._data)
 
-        return base64.urlsafe_b64encode(data_str).decode('utf-8')
+        return base64.urlsafe_b64encode(data_str).decode("utf-8")
 
 
-def divide_transactions(transactions: List[Transaction], savingsAccount=None) -> Dict[str, List[Transaction]]:
+def divide_transactions(
+    transactions: List[Transaction], savingsAccount=None
+) -> Dict[str, List[Transaction]]:
     result = {}
 
     for transaction in transactions:
         # Todo: Find out how to filter savings transactions
         if transaction._data is None:
-            result['savings'] = result.get('savings', []) + [transaction]
+            result["savings"] = result.get("savings", []) + [transaction]
         elif transaction.amount < 0:
-            result['expenses'] = result.get('expenses', []) + [transaction]
+            result["expenses"] = result.get("expenses", []) + [transaction]
         elif transaction.amount > 0:
-            result['income'] = result.get('income', []) + [transaction]
+            result["income"] = result.get("income", []) + [transaction]
 
     return result
 
