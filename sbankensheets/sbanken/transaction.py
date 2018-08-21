@@ -1,6 +1,9 @@
 from typing import Optional, Union, List, Dict, Iterable
 
 from sbankensheets.sbanken.constants import Category
+import dateutil.parser
+import base64
+import pickle
 
 
 class Transaction(object):
@@ -70,22 +73,17 @@ class Transaction(object):
         ]
 
     def extract_date(self) -> str:
-        import dateutil.parser as dp
-
         data = self._data
 
         if data["cardDetailsSpecified"]:
-            time = dp.parse(data["cardDetails"]["purchaseDate"])
+            time = dateutil.parser.parse(data["cardDetails"]["purchaseDate"])
         else:
-            time = dp.parse(data["accountingDate"])
+            time = dateutil.parser.parse(data["accountingDate"])
 
         return time.date().isoformat()
 
     @staticmethod
     def decode(encoded_str: str) -> "Transaction":
-        import base64
-        import pickle
-
         encoded_bytes = encoded_str.encode("utf-8")
         data_str = base64.urlsafe_b64decode(encoded_bytes)
         data = pickle.loads(data_str)
@@ -93,9 +91,6 @@ class Transaction(object):
         return Transaction(data)
 
     def encode(self) -> str:
-        import base64
-        import pickle
-
         data_str = pickle.dumps(self._data)
 
         return base64.urlsafe_b64encode(data_str).decode("utf-8")
@@ -124,5 +119,5 @@ def filter_transactions(first: Iterable[Transaction], second: Iterable[Transacti
     return filtered
 
 
-def cell_values_to_transactions(cell_values):
+def cell_values_to_transactions(cell_values: Iterable) -> Iterable:
     return map(lambda x: Transaction.decode(x[0]), cell_values)
