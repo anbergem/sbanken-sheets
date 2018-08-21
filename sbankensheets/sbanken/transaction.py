@@ -1,4 +1,4 @@
-from typing import Optional, Union, List, Dict, Iterable
+from typing import Optional, Union, List, Dict, Iterable, Tuple, Callable, Any
 
 from sbankensheets.sbanken.constants import Category
 import dateutil.parser
@@ -97,18 +97,15 @@ class Transaction(object):
 
 
 def divide_transactions(
-    transactions: List[Transaction], savingsAccount=None
+    transactions: List[Transaction], categories
 ) -> Dict[str, List[Transaction]]:
+
     result = {}
 
     for transaction in transactions:
-        # Todo: Find out how to filter savings transactions
-        if transaction._data is None:
-            result["savings"] = result.get("savings", []) + [transaction]
-        elif transaction.amount < 0:
-            result["expenses"] = result.get("expenses", []) + [transaction]
-        elif transaction.amount > 0:
-            result["income"] = result.get("income", []) + [transaction]
+        for category, func in categories:
+            if func(transaction):
+                result[category] = result.get(category, []) + [transaction]
 
     return result
 

@@ -20,16 +20,24 @@ def main():
 
     gsheets = gs.GSheet(urls.spreadsheet_id)
 
-    divided_transactions = sb.divide_transactions(transactions)
+    divided_transactions = sb.divide_transactions(
+        transactions,
+        (
+            ("expenses", lambda x: x.amount < 0 and x.transaction_type != "Overføring"),
+            ("income", lambda x: x.amount > 0 and x.transaction_type != "Overføring"),
+            ("savings", lambda x: x.amount < 0 and x.transaction_type == "Overføring"),
+        ),
+    )
 
     # Todo: Include savings
     # Start cells
-    expenses_date_cell, income_date_cell, *savings_date_cell = gs.find_cells(
+    expenses_date_cell, income_date_cell, savings_date_cell = gs.find_cells(
         gsheets, "Dummy", "Dato"
     )
 
     for transaction_date_cell, name in zip(
-        (expenses_date_cell, income_date_cell), ("expenses", "income")
+        (expenses_date_cell, income_date_cell, savings_date_cell),
+        ("expenses", "income", "savings"),
     ):
 
         # Subtract a column for encoding
