@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
@@ -85,3 +85,37 @@ class Sbanken(object):
             raise RuntimeError(
                 "{} {}".format(response["errorType"], response["errorMessage"])
             )
+
+    def get_account(self, account_name, customer_id=None) -> Optional[Dict]:
+        """
+        Retrieve account information for a specific account, id'd by the
+        account name and the customer id of the owner.
+
+        :param account_name: Name of the account
+        :param customer_id: Customer id of the owner of the account. Defaults to
+        the customer id of the Sbanken class.
+        :return: The account if found, else None.
+        """
+        if customer_id is None:
+            customer_id = self.customer_id
+
+        response = self.session.get(
+            "https://api.sbanken.no/bank/api/v1/Accounts",
+            headers={"customerId": self.customer_id},
+        ).json()
+
+        if response["isError"]:
+            raise RuntimeError(
+                "{} {}".format(response["errorType"], response["errorMessage"])
+            )
+
+        accounts = response["items"]
+
+        for account in accounts:
+            if (
+                account["name"] == account_name
+                and account["ownerCustomerId"] == customer_id
+            ):
+                return account
+
+        return None

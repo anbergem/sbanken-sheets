@@ -12,14 +12,7 @@ def main():
         private_api_keys.CLIENTID, private_api_keys.SECRET, private_api_keys.CUSTOMERID
     )
 
-    accounts = sbanken.get_accounts()
-
-    # Todo: make this pretty
-    for account in accounts:
-        if account["name"] == "Sparekonto":
-            savings_account = account["accountId"]
-
-    account = accounts[0]
+    account = sbanken.get_account("Brukskonto")
 
     transactions = sbanken.get_transactions(
         account["accountId"], start_date="2018-08-01", length=1000
