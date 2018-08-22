@@ -1,10 +1,13 @@
+import json
+import os
+import urllib.parse
 from typing import List, Dict, Optional
 
+import requests
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
-import urllib.parse
-import requests
 
+from sbankensheets.definitions import AUTH_PATH
 from sbankensheets.sbanken.transaction import Transaction
 
 
@@ -26,11 +29,14 @@ class SbankenSession(object):
         )
         return session
 
-    def __init__(self, client_id: str, client_secret: str, customer_id: str):
+    def __init__(self):
+        with open(os.path.join(AUTH_PATH, "sbanken_api_keys.json")) as file:
+            creds = json.load(file)
+
         self.session = SbankenSession._create_authenticated_http_session(
-            client_id, client_secret
+            creds["client_id"], creds["client_secret"]
         )
-        self.customer_id = customer_id
+        self.customer_id = creds["customer_id"]
 
     def get_transactions(
         self,

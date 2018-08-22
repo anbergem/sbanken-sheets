@@ -5,12 +5,7 @@ import sbankensheets.gsheets as gs
 
 
 def main():
-    from sbankensheets import private_api_keys
-    from sbankensheets import urls
-
-    sbanken = sb.SbankenSession(
-        private_api_keys.CLIENTID, private_api_keys.SECRET, private_api_keys.CUSTOMERID
-    )
+    sbanken = sb.SbankenSession()
 
     account = sbanken.get_account("Brukskonto")
 
