@@ -20,9 +20,9 @@ def main():
     divided_transactions = sb.divide_transactions(
         transactions,
         (
-            ("expenses", lambda x: x.amount < 0 and x.transaction_type != "Overføring"),
-            ("income", lambda x: x.amount > 0 and x.transaction_type != "Overføring"),
-            ("savings", lambda x: x.amount < 0 and x.transaction_type == "Overføring"),
+            ("expenses", lambda x: x.amount < 0 and x.transaction_type_code != 200),
+            ("income", lambda x: x.amount > 0 and x.transaction_type_code != 200),
+            ("savings", lambda x: x.amount < 0 and x.transaction_type_code == 200),
         ),
     )
 

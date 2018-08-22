@@ -34,6 +34,10 @@ class Transaction(object):
         return self._data["transactionType"]
 
     @property
+    def transaction_type_code(self) -> int:
+        return self._data["transactionTypeCode"]
+
+    @property
     def text(self) -> str:
         return self._data["text"]
 
@@ -109,12 +113,12 @@ def divide_transactions(
     transactions: List[Transaction], categories
 ) -> Dict[str, List[Transaction]]:
 
-    result = {}
+    result = {category: [] for category in map(lambda x: x[0], categories)}
 
     for transaction in transactions:
         for category, func in categories:
             if func(transaction):
-                result[category] = result.get(category, []) + [transaction]
+                result[category].append(transaction)
 
     return result
 
