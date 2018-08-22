@@ -1,2 +1,2 @@
-from .sbanken import *
+from .sbanken_session import *
 from .transaction import *

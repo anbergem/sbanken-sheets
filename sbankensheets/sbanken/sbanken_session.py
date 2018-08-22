@@ -8,7 +8,7 @@ import requests
 from sbankensheets.sbanken.transaction import Transaction
 
 
-class Sbanken(object):
+class SbankenSession(object):
     """
     Class for handling HTTPS requests to the REST API from SBanken.
     """
@@ -27,7 +27,7 @@ class Sbanken(object):
         return session
 
     def __init__(self, client_id: str, client_secret: str, customer_id: str):
-        self.session = Sbanken._create_authenticated_http_session(
+        self.session = SbankenSession._create_authenticated_http_session(
             client_id, client_secret
         )
         self.customer_id = customer_id
