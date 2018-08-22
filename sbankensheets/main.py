@@ -2,6 +2,7 @@ from pprint import pprint
 
 import sbankensheets.sbanken as sb
 import sbankensheets.gsheets as gs
+from sbankensheets.gsheets import urls
 
 
 def main():
@@ -37,28 +38,26 @@ def main():
     ):
 
         # Subtract a column for encoding
-        transaction_encoding_cell = transaction_date_cell - (1, 0)
+        transaction_id_cell = transaction_date_cell - (1, 0)
 
         # Extract encoding
         # + (0, 1) for dropping header
-        transaction_encodings_range = gs.A1Range.from_cell(
-            transaction_encoding_cell + (0, 1), sheet=sheet
+        transaction_id_range = gs.A1Range.from_cell(
+            transaction_id_cell + (0, 1), sheet=sheet
         )
 
-        transaction_enc = gsheets.get(transaction_encodings_range)
-        # print(transaction_enc)
-        # return
-        transaction_enc_values = transaction_enc["values"]
+        transaction_ids = gsheets.get(transaction_id_range)
+        transaction_id_values = transaction_ids["values"]
 
-        gs_automatic_cell_values = gs.filter_manual_cell_values(transaction_enc_values)
-        gs_transaction = sb.cell_values_to_transactions(gs_automatic_cell_values)
+        # If transactions are manually entered, they're id should me '.'
+        gs_automatic_cell_values = gs.filter_manual_cell_values(transaction_id_values)
+        gs_transactions = sb.cell_values_to_transactions(gs_automatic_cell_values)
 
-        filtered_transactions = sb.filter_transactions(
-            divided_transactions[name], gs_transaction
-        )
+        sb_transactions = divided_transactions[name]
+        filtered_transactions = sb.filter_transactions(sb_transactions, gs_transactions)
 
         transaction_range = gs.A1Range.from_cell(
-            transaction_encoding_cell, range=(4, 0), sheet=sheet
+            transaction_id_cell, range=(4, 0), sheet=sheet
         )
 
         # Append transactions

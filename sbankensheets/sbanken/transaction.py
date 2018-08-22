@@ -16,6 +16,7 @@ class Transaction(object):
             if keyword in data:
                 del data[keyword]
         self._data = data
+        self._id = self._encode()
         self.category = self.categorize()
 
     def __str__(self):
@@ -44,6 +45,10 @@ class Transaction(object):
     def category(self, value: Union[str, Category]):
         self._category = value
 
+    @property
+    def id(self) -> str:
+        return self._id
+
     def categorize(self) -> Optional[str]:
         from sbankensheets.sbanken.constants import transaction_keywords
 
@@ -64,7 +69,7 @@ class Transaction(object):
         )
 
     def to_sheets_row(self, encode: bool = False) -> List[str]:
-        result = [self.encode()] if encode else []
+        result = [self._encode()] if encode else []
         return result + [
             self.extract_date(),
             str(self.amount if self.amount > 0 else -self.amount).replace(".", ","),
@@ -83,14 +88,18 @@ class Transaction(object):
         return time.date().isoformat()
 
     @staticmethod
-    def decode(encoded_str: str) -> "Transaction":
+    def from_id(id: str) -> "Transaction":
+        return Transaction._decode(id)
+
+    @staticmethod
+    def _decode(encoded_str: str) -> "Transaction":
         encoded_bytes = encoded_str.encode("utf-8")
         data_str = base64.urlsafe_b64decode(encoded_bytes)
         data = pickle.loads(data_str)
 
         return Transaction(data)
 
-    def encode(self) -> str:
+    def _encode(self) -> str:
         data_str = pickle.dumps(self._data)
 
         return base64.urlsafe_b64encode(data_str).decode("utf-8")
@@ -117,4 +126,4 @@ def filter_transactions(first: Iterable[Transaction], second: Iterable[Transacti
 
 
 def cell_values_to_transactions(cell_values: Iterable) -> Iterable:
-    return map(lambda x: Transaction.decode(x[0]), cell_values)
+    return map(lambda x: Transaction._decode(x[0]), cell_values)
