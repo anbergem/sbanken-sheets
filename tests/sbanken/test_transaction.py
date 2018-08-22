@@ -64,7 +64,7 @@ class TestTransaction(unittest.TestCase):
     def test_to_sheets_row_with_encoding(self):
         trans = self.transaction
         amount = str(-trans.amount).replace(".", ",")
-        expected = [trans.encode(), trans.extract_date(), amount, trans.text, ""]
+        expected = [trans._encode(), trans.extract_date(), amount, trans.text, ""]
         actual = self.transaction.to_sheets_row(encode=True)
 
         self.assertEqual(actual, expected)
@@ -100,26 +100,26 @@ class TestTransaction(unittest.TestCase):
     @mock.patch("sbankensheets.sbanken.transaction.base64")
     @mock.patch("sbankensheets.sbanken.transaction.pickle")
     def test_encode_called_with_pickle_dumps_str(self, mock_pickle, mock_base64):
-        self.transaction.encode()
+        self.transaction._encode()
         mock_base64.urlsafe_b64encode.assert_called_once_with(mock_pickle.dumps())
 
     @mock.patch("sbankensheets.sbanken.transaction.base64")
     @mock.patch("sbankensheets.sbanken.transaction.pickle")
     def test_encode_return_urlsafe_b64encode_decode(self, mock_pickle, mock_base64):
-        string = self.transaction.encode()
+        string = self.transaction._encode()
 
         self.assertEqual(string, mock_base64.urlsafe_b64encode().decode())
 
     @mock.patch("sbankensheets.sbanken.transaction.base64")
     def test_encode_base64_urlsafe_b64encode_decode_called_with_utf8(self, mock_base64):
-        self.transaction.encode()
+        self.transaction._encode()
         mock_base64.urlsafe_b64encode().decode.called_once_with("utf-8")
 
     @mock.patch("sbankensheets.sbanken.transaction.base64")
     @mock.patch("sbankensheets.sbanken.transaction.pickle")
     def test_decode_calls_encode_utf8_on_arg(self, mock_pickle, mock_base64):
         mock_string = mock.Mock()
-        Transaction.decode(mock_string)
+        Transaction._decode(mock_string)
         mock_string.encode.assert_called_once_with("utf-8")
 
     @mock.patch("sbankensheets.sbanken.transaction.base64")
@@ -128,12 +128,12 @@ class TestTransaction(unittest.TestCase):
         self, mock_pickle, mock_base64
     ):
         mock_string = mock.Mock()
-        Transaction.decode(mock_string)
+        Transaction._decode(mock_string)
         mock_base64.urlsafe_b64decode.assert_called_with(mock_string.encode())
 
     @mock.patch("sbankensheets.sbanken.transaction.base64")
     @mock.patch("sbankensheets.sbanken.transaction.pickle")
     def test_decode_transaction_data_is_decoded(self, mock_pickle, mock_base64):
         mock_string = mock.Mock()
-        transaction = Transaction.decode(mock_string)
+        transaction = Transaction._decode(mock_string)
         self.assertEqual(transaction._data, mock_pickle.loads())
