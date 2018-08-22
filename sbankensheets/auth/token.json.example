@@ -1,0 +1,23 @@
+{
+    "client_secret": "",
+    "id_token_jwt": null,
+    "refresh_token": "",
+    "id_token": null,
+    "_module": "oauth2client.client",
+    "scopes": ["https://www.googlecwapis.com/auth/spreadsheets"],
+    "revoke_uri": "https://accounts.google.com/o/oauth2/revoke",
+    "client_id": "",
+    "_class": "OAuth2Credentials",
+    "invalid": false,
+    "token_response": {
+        "token_type": "Bearer",
+        "expires_in": 3600,
+        "access_token": "",
+        "scope": "https://www.googleapis.com/auth/spreadsheets",
+    },
+    "access_token": "",
+    "token_expiry": "",
+    "user_agent": null,
+    "token_info_uri": "https://www.googleapis.com/oauth2/v3/tokeninfo",
+    "token_uri": "https://www.googleapis.com/oauth2/v3/token",
+}

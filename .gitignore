@@ -110,7 +110,9 @@ venv.bak/
 sbankensheets/private_api_keys.py
 sbankensheets/transactions.txt
 
-auth
+sbankensheets/auth/credentials.json
+sbankensheets/auth/sbanken_api_keys.json
+sbankensheets/auth/token.json
 
 # OSX
 .DS_Store
