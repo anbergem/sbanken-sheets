@@ -1,4 +1,4 @@
-from typing import Optional, Union, List, Dict, Iterable, Tuple, Callable, Any
+from typing import Optional, Union, List, Dict, Iterable, Tuple, Callable, Any, Sequence
 
 from sbankensheets.sbanken.constants import Category
 import dateutil.parser
@@ -72,7 +72,7 @@ class Transaction(object):
             [self.text, str(self.amount), self.category.value if self.category else ""]
         )
 
-    def to_sheets_row(self, encode: bool = False) -> List[str]:
+    def to_sheets_row(self, encode: bool = False) -> Sequence[str]:
         result = [self._encode()] if encode else []
         return result + [
             self.extract_date(),
@@ -110,7 +110,7 @@ class Transaction(object):
 
 
 def divide_transactions(
-    transactions: List[Transaction], categories
+    transactions: Sequence[Transaction], categories
 ) -> Dict[str, List[Transaction]]:
 
     result = {category: [] for category in map(lambda x: x[0], categories)}

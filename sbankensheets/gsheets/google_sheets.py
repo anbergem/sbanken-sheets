@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Sequence
 
 from googleapiclient.discovery import build
 from httplib2 import Http
@@ -43,7 +43,7 @@ class GSheet(object):
     def append(
         self,
         range: A1Range,
-        values: List[List[str]],
+        values: Sequence[Sequence[str]],
         value_input_option: str = "USER_ENTERED",
         insert_data_option: str = "OVERWRITE",
     ) -> Dict:
