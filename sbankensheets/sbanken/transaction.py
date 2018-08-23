@@ -1,9 +1,8 @@
-from typing import Optional, Union, List, Dict, Iterable, Tuple, Callable, Any, Sequence
-
-from sbankensheets.sbanken.constants import Category
-import dateutil.parser
 import base64
 import pickle
+from typing import List, Dict, Iterable, Sequence
+
+import dateutil.parser
 
 
 class Transaction(object):
@@ -17,7 +16,7 @@ class Transaction(object):
                 del data[keyword]
         self._data = data
         self._id = self._encode()
-        self.category = self.categorize()
+        self.category = ""
 
     def __str__(self):
         return str(self._data)
@@ -42,30 +41,16 @@ class Transaction(object):
         return self._data["text"]
 
     @property
-    def category(self) -> Optional[Category]:
+    def category(self) -> str:
         return self._category
 
     @category.setter
-    def category(self, value: Union[str, Category]):
+    def category(self, value: str):
         self._category = value
 
     @property
     def id(self) -> str:
         return self._id
-
-    def categorize(self) -> Optional[str]:
-        from sbankensheets.sbanken.constants import transaction_keywords
-
-        for keyword in transaction_keywords:
-            if (
-                "transaction_type" in keyword
-                and keyword["transaction_type"].lower() == self.transaction_type.lower()
-            ):
-                return keyword["category"]
-            elif keyword["description"].lower() in self.text.lower():
-                return keyword["category"]
-
-        return None
 
     def to_csv(self) -> str:
         return ",".join(
@@ -78,7 +63,7 @@ class Transaction(object):
             self.extract_date(),
             str(self.amount if self.amount > 0 else -self.amount).replace(".", ","),
             self.text,
-            self.category.value if self.category else "",
+            self.category,
         ]
 
     def extract_date(self) -> str:
