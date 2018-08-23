@@ -1,4 +1,4 @@
-from typing import Union, Tuple, List
+from typing import Union, Tuple, List, Sequence
 
 
 class A1Cell(object):
@@ -15,9 +15,7 @@ class A1Cell(object):
         >>> f = A1Cell(a)
     """
 
-    def __init__(
-        self, *args: Union["A1Cell", int, str, Union[Tuple[int, int], List[int]]]
-    ):
+    def __init__(self, *args: Union["A1Cell", int, str, Sequence]):
         self._base_col = ord("A")
         self._last_col = ord("Z")
         if len(args) == 1:
@@ -66,7 +64,7 @@ class A1Cell(object):
             else:
                 raise ValueError("Columns above Z are not supported.")
 
-    def __add__(self, value: Union[Tuple[int, int], List[int]]):
+    def __add__(self, value: Sequence):
         if (
             isinstance(value, (tuple, list))
             and len(value) == 2
@@ -76,7 +74,7 @@ class A1Cell(object):
 
         raise ValueError(f"Expected tuple of two ints: {value.__class__}")
 
-    def __sub__(self, value: Union[Tuple[int, int], List[int]]):
+    def __sub__(self, value: Sequence):
         if (
             isinstance(value, (tuple, list))
             and len(value) == 2
@@ -150,12 +148,7 @@ class A1Range(object):
         self._sheet = sheet
 
     @classmethod
-    def from_cell(
-        cls,
-        start_cell: A1Cell,
-        range: Union[Tuple[int, int], List[int]] = None,
-        sheet: str = None,
-    ):
+    def from_cell(cls, start_cell: A1Cell, range: Sequence = None, sheet: str = None):
         if range and (len(range) != 2 or not all(isinstance(x, int) for x in range)):
             raise ValueError("Range must be tuple/list of two ints")
         return cls(start_cell, start_cell + range if range else None, sheet=sheet)

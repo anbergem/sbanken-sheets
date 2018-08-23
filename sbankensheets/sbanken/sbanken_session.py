@@ -1,6 +1,6 @@
 from os import environ
 import urllib.parse
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Sequence
 
 import requests
 from oauthlib.oauth2 import BackendApplicationClient
@@ -70,7 +70,7 @@ class SbankenSession(object):
 
         return transactions
 
-    def get_accounts(self) -> List[Dict]:
+    def get_accounts(self) -> Sequence[Dict]:
         """
         Retrieve account information of all accounts for Sbanken object.
         :return: A list of dictionaries, each representing one account.
