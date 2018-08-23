@@ -30,7 +30,6 @@ def main():
         ),
     )
 
-    # Todo: Include savings
     # Start cells
     expenses_date_cell, income_date_cell, savings_date_cell = gs.find_cells(
         gsheets, sheet, "Dato"
