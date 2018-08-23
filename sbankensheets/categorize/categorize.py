@@ -10,6 +10,7 @@ category_sheet = "Kategorier"
 def process_category_values(values: List):
     length = len(values)
     category = values[0]
+    # Does amount need to be cast to int/float?
     amount = values[1] if length > 1 else ""
     amount_action = values[2] if length > 2 else ""
     keywords = values[3].split(",") if length > 3 else []
