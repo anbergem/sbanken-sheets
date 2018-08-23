@@ -73,7 +73,8 @@ def _categorize_uncertainty(transaction: Transaction, category: Dict):
 
 
 def categorize(transaction: Transaction, categories) -> Optional[str]:
-    print(categories)
+    # Used for the * keyword. Search other categories first.
+    value = None
     for category in categories:
         keywords = category["keywords"]
         for keyword in keywords:
@@ -85,4 +86,6 @@ def categorize(transaction: Transaction, categories) -> Optional[str]:
                 return category["category"]
             elif keyword in transaction.text.lower():
                 return category["category"]
-    return None
+            elif keyword == "*":
+                value = category["category"]
+    return value
