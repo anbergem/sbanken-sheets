@@ -13,11 +13,9 @@ class TestSbanken(unittest.TestCase):
             "sbankensheets.sbanken.sbanken_session.BackendApplicationClient"
         ).start()
         mock.patch("sbankensheets.sbanken.sbanken_session.OAuth2Session").start()
-        mock.patch("sbankensheets.sbanken.sbanken_session.open").start()
+        mock.patch("sbankensheets.sbanken.sbanken_session.environ").start()
         mock.patch("urllib.parse").start()
         mock.patch("requests.Session").start()
-        mock.patch("os.path").start()
-        mock.patch("json.load").start()
         self.Transaction = mock.patch(
             "sbankensheets.sbanken.sbanken_session.Transaction"
         ).start()

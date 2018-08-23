@@ -6,6 +6,10 @@ from sbankensheets.gsheets import urls
 
 
 def main():
+    from dotenv import load_dotenv, find_dotenv
+
+    load_dotenv(find_dotenv())
+
     sbanken = sb.SbankenSession()
 
     account = sbanken.get_account("Brukskonto")
