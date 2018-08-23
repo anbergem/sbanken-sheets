@@ -1,5 +1,4 @@
-import json
-import os
+from os import environ
 import urllib.parse
 from typing import List, Dict, Optional
 
@@ -7,7 +6,6 @@ import requests
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
-from sbankensheets.definitions import AUTH_PATH
 from sbankensheets.sbanken.transaction import Transaction
 
 
@@ -30,13 +28,10 @@ class SbankenSession(object):
         return session
 
     def __init__(self):
-        with open(os.path.join(AUTH_PATH, "sbanken_api_keys.json")) as file:
-            creds = json.load(file)
-
         self.session = SbankenSession._create_authenticated_http_session(
-            creds["client_id"], creds["client_secret"]
+            environ["CLIENT_ID"], environ["CLIENT_SECRET"]
         )
-        self.customer_id = creds["customer_id"]
+        self.customer_id = environ["CUSTOMER_ID"]
 
     def get_transactions(
         self,
