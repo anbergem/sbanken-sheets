@@ -78,7 +78,13 @@ def main():
         values = values[::-1]
         response = gsheet.append(transaction_range, values)
 
-        pprint(response)
+        if "updatedRows" in response["updates"]:
+            updates = response["updates"]
+            print(
+                f"Updated {updates['updatedRows']} rows and {updates['updatedColumns']} columns for {name}"
+            )
+        else:
+            print(f"No updates for {name}")
 
 
 if __name__ == "__main__":
