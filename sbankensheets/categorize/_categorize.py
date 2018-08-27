@@ -28,11 +28,7 @@ def get_categories(gsheet: GSheet):
     if not cells:
         print("No cells found")
         return
-
     expenses, incomes, savings = cells
-
-    if not expenses or not incomes:
-        print(cells)
 
     categories = {"expenses": [], "income": [], "savings": []}
 

@@ -4,23 +4,21 @@ import unittest.mock as mock
 from sbankensheets.categorize import (
     process_category_values,
     get_categories,
-    _categorize_uncertainty,
 )
 
 
 class TestCategorize(unittest.TestCase):
     def setUp(self):
         super().setUp()
-        mock.patch("sbankensheets.gsheets.google_sheets.GSheet").start()
-        mock.patch("sbankensheets.gsheets.a1.A1Range").start()
-        mock.patch("sbankensheets.gsheets.google_sheets_helpers.find_cells").start()
-        mock.patch("sbankensheets.sbanken.transaction.Transaction").start()
+        # mock.patch("sbankensheets.gsheets.a1.A1Range").start()
+        # mock.patch("sbankensheets.gsheets.google_sheets_helpers.find_cells").start()
+        # mock.patch("sbankensheets.sbanken.transaction.Transaction").start()
 
     def tearDown(self):
         super().tearDown()
         mock.patch.stopall()
 
-    def test_process_category_value(self):
+    def test_process_category_values(self):
         test_category = "test_category"
         test_amount = "test_amount"
         default_amount = ""
@@ -39,3 +37,26 @@ class TestCategorize(unittest.TestCase):
             }
             actual = process_category_values(data[:i])
             self.assertEqual(actual, expected)
+
+    @mock.patch("sbankensheets.categorize._categorize.A1Range")
+    @mock.patch("sbankensheets.categorize._categorize.find_cells")
+    @mock.patch("sbankensheets.categorize._categorize.GSheet")
+    def test_get_categories_find_no_cells_return_none(
+        self, mock_gsheet, mock_find_cells, mock_a1range
+    ):
+        mock_find_cells.return_value = None
+        self.assertIsNone(get_categories(mock_gsheet))
+
+    @mock.patch("sbankensheets.categorize._categorize.A1Range")
+    @mock.patch("sbankensheets.categorize._categorize.find_cells")
+    @mock.patch("sbankensheets.categorize._categorize.GSheet")
+    def test_get_categories_get_category_range_has_no_values_returns_none(
+        self, mock_gsheet, mock_find_cells, mock_a1range
+    ):
+        mock_find_cells.return_value = (
+            mock.MagicMock(),
+            mock.MagicMock(),
+            mock.MagicMock(),
+        )
+        mock_gsheet.get.return_value = {}
+        self.assertIsNone(get_categories(mock_gsheet))
