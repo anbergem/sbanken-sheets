@@ -1,7 +1,8 @@
 import unittest
 import unittest.mock as mock
 
-from sbankensheets.categorize import process_category_values, get_categories, Category
+from sbankensheets.categorize import *
+from sbankensheets.categorize import _categorize_uncertainty
 
 
 class TestCategorize(unittest.TestCase):
@@ -84,3 +85,179 @@ class TestCategorize(unittest.TestCase):
 
         actual = get_categories(gsheet=mock_gsheet)
         self.assertEqual(actual, expected)
+
+    def test_categorize_uncertainty_no_amount_action_equal_amount_return_true(self):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = 100
+        mock_category.amount = 100
+        mock_category.amount_action = None
+
+        self.assertTrue(_categorize_uncertainty(mock_transaction, mock_category))
+
+    def test_categorize_uncertainty_no_amount_action_equal_amount_transaction_negative_return_true(
+        self
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = -100
+        mock_category.amount = 100
+        mock_category.amount_action = None
+
+        self.assertTrue(_categorize_uncertainty(mock_transaction, mock_category))
+
+    def test_categorize_uncertainty_amount_action_plus_transaction_amount_more_than_category_amount_return_true(
+        self
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = 100
+        mock_category.amount = 50
+        mock_category.amount_action = "+"
+
+        self.assertTrue(_categorize_uncertainty(mock_transaction, mock_category))
+
+    def test_categorize_uncertainty_amount_action_plus_transaction_amount_equal_category_amount_return_true(
+        self
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = 100
+        mock_category.amount = 100
+        mock_category.amount_action = "+"
+
+        self.assertTrue(_categorize_uncertainty(mock_transaction, mock_category))
+
+    def test_categorize_uncertainty_amount_action_plus_transaction_amount_less_than_category_amount_return_false(
+        self
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = 50
+        mock_category.amount = 100
+        mock_category.amount_action = "+"
+
+        self.assertFalse(_categorize_uncertainty(mock_transaction, mock_category))
+
+    def test_categorize_uncertainty_amount_action_minus_amount_less_than_category_amount_return_true(
+        self
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = 50
+        mock_category.amount = 100
+        mock_category.amount_action = "-"
+
+        self.assertTrue(_categorize_uncertainty(mock_transaction, mock_category))
+
+    def test_categorize_uncertainty_amount_action_minus_amount_more_than_category_amount_return_false(
+        self
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = 100
+        mock_category.amount = 50
+        mock_category.amount_action = "-"
+
+        self.assertFalse(_categorize_uncertainty(mock_transaction, mock_category))
+
+    def test_categorize_uncertainty_amount_action_minus_transaction_amount_equal_category_amount_return_true(
+        self
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = 100
+        mock_category.amount = 100
+        mock_category.amount_action = "-"
+
+        self.assertTrue(_categorize_uncertainty(mock_transaction, mock_category))
+
+    def test_categorize_uncertainty_amount_action_not_plus_or_minus_return_false(self):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.amount = 50
+        mock_category.amount_action = "any-value"
+
+        self.assertFalse(_categorize_uncertainty(mock_transaction, mock_category))
+
+    @mock.patch("sbankensheets.categorize._categorize._categorize_uncertainty")
+    def test_categorize_with_uncertainty_keyword_calls_uncertainty(
+        self, mock_uncertainty
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.text.lower.return_value = "A string with test in it."
+        mock_category.keywords = ["test?"]
+        categorize(mock_transaction, [mock_category])
+
+        mock_uncertainty.assert_called_once()
+
+    @mock.patch("sbankensheets.categorize._categorize._categorize_uncertainty")
+    def test_categorize_with_uncertainty_keyword_returns_category_name_if_uncertainty_true(
+        self, mock_uncertainty
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.text.lower.return_value = "A string with test in it."
+        mock_category.keywords = ["test?"]
+        test_name = "test-name"
+        mock_category.name = test_name
+        mock_uncertainty.return_value = True
+        actual = categorize(mock_transaction, [mock_category])
+
+        self.assertEqual(actual, test_name)
+
+    def test_categorize_with_keyword_in_text_return_category_name(self):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.text.lower.return_value = "A string with test in it."
+        mock_category.keywords = ["test"]
+        test_name = "test-name"
+        mock_category.name = test_name
+        actual = categorize(mock_transaction, [mock_category])
+
+        self.assertEqual(actual, test_name)
+
+    def test_categorize_with_no_keyword_in_text_return_none(self):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.text.lower.return_value = "A string without keyword in it."
+        mock_category.keywords = ["test"]
+        test_name = "test-name"
+        mock_category.name = test_name
+        actual = categorize(mock_transaction, [mock_category])
+
+        self.assertIsNone(actual)
+
+    def test_categorize_with_star_keyword_return_category_name(self):
+        mock_transaction = mock.MagicMock()
+        mock_category = mock.MagicMock()
+        mock_transaction.text.lower.return_value = "A string without keyword in it."
+        mock_category.keywords = ["*"]
+        test_name = "test-name"
+        mock_category.name = test_name
+        actual = categorize(mock_transaction, [mock_category])
+
+        self.assertEqual(actual, test_name)
+
+    def test_categorize_with_multiple_keywords_and_star_returns_ordinary_keyword_category_first(
+        self
+    ):
+        mock_transaction = mock.MagicMock()
+        mock_transaction.text.lower.return_value = "A string with test in it."
+
+        mock_category_star = mock.MagicMock()
+        mock_category_star.keywords = ["*"]
+        test_name_star = "wrong-name"
+        mock_category_star.name = test_name_star
+
+        mock_category_ordinary = mock.MagicMock()
+        mock_category_ordinary.keywords = ["test", "keywords"]
+        test_name_ordinary = "correct-name"
+        mock_category_ordinary.name = test_name_ordinary
+
+        actual = categorize(
+            mock_transaction, [mock_category_star, mock_category_ordinary]
+        )
+
+        self.assertEqual(actual, test_name_ordinary)
