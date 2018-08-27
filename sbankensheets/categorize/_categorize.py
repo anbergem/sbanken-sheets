@@ -11,18 +11,20 @@ category_sheet = "Kategorier"
 @dataclass
 class Category:
     name: str
-    amount: float
-    amount_action: str
+    amount: float = None
+    amount_action: str = None
     keywords: List[str] = field(default_factory=list)
 
 
 def process_category_values(values: List):
     length = len(values)
+    if length < 1:
+        raise ValueError(f"values must be of length > 0: {length}")
     category = values[0]
     # Does amount need to be cast to int/float?
-    amount = values[1] if length > 1 else ""
-    amount_action = values[2] if length > 2 else ""
-    keywords = values[3].split(",") if length > 3 else []
+    amount = values[1] if length > 1 and values[1] else None
+    amount_action = values[2] if length > 2 and values[2] else None
+    keywords = values[3].split(",") if length > 3 and values[3] else []
 
     return Category(
         category, amount, amount_action, [word.strip().lower() for word in keywords]
