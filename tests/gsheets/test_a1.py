@@ -8,6 +8,16 @@ class TestA1Cell(unittest.TestCase):
         super().setUp()
         self.cell_c4 = A1Cell("C4")
 
+    def test_correct_constructors(self):
+        cell_c4 = A1Cell("C4")
+        self.assertEqual(self.cell_c4, cell_c4)
+
+        cell_c4 = A1Cell(self.cell_c4)
+        self.assertEqual(self.cell_c4, cell_c4)
+
+        cell_c4 = A1Cell([2, 3])
+        self.assertEqual(self.cell_c4, cell_c4)
+
     def test_add_two_cells(self):
         addition = (1, 2)
         expected = A1Cell("D6")
@@ -16,10 +26,10 @@ class TestA1Cell(unittest.TestCase):
 
         self.assertEqual(actual, expected)
 
-    def test_add_with_non_tuple_raises_exception(self):
+    def test_add_with_non_tuple_or_tuple_wrong_size_raises_exception(self):
         import operator
 
-        for addition in (5, 5.4, "A5", A1Cell("A5")):
+        for addition in (5, 5.4, "A5", A1Cell("A5"), (1, 1, 1)):
             self.assertRaises(ValueError, operator.add, self.cell_c4, addition)
 
     def test_iadd_two_cells(self):
@@ -30,6 +40,20 @@ class TestA1Cell(unittest.TestCase):
         actual = self.cell_c4
 
         self.assertEqual(actual, expected)
+
+    def test_sub_two_cells(self):
+        subtraction = (1, 2)
+        expected = A1Cell("B2")
+
+        actual = self.cell_c4 - subtraction
+
+        self.assertEqual(expected, actual)
+
+    def test_sub_with_non_tuple_or_tuple_wrong_size_raises_exception(self):
+        import operator
+
+        for subtraction in (5, 5.4, "A5", A1Cell("A5"), (1, 1, 1)):
+            self.assertRaises(ValueError, operator.sub, self.cell_c4, subtraction)
 
     def test_get_index_0(self):
         expected_0_idx = "C"
