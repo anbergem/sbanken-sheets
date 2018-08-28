@@ -1,7 +1,7 @@
 import unittest
 import unittest.mock as mock
 
-from sbankensheets.sbanken import SbankenSession
+from sbankensheets.sbanken import SbankenSession, SbankenError
 
 
 class TestSbanken(unittest.TestCase):
@@ -25,7 +25,7 @@ class TestSbanken(unittest.TestCase):
         mock.patch.stopall()
 
     def test_get_transaction_calls_session_get_with_correct_args(self):
-        self.sbanken.session.get().json = lambda: {"items": [], "isError": False}
+        self.sbanken.session.get().json.return_value = {"items": [], "isError": False}
         # Reset number of times called
         self.sbanken.session.get.reset_mock()
 
@@ -57,12 +57,135 @@ class TestSbanken(unittest.TestCase):
         items = [1, 2, 3]
         expected = [self.Transaction(item) for item in items]
 
-        self.sbanken.session.get().json = lambda: {"items": items, "isError": False}
-        # Reset number of times called
-        self.sbanken.session.get.reset_mock()
+        self.sbanken.session.get().json.return_value = {
+            "items": items,
+            "isError": False,
+        }
 
         account_id = "test-account-id"
         response = self.sbanken.get_transactions(account_id=account_id)
 
         for resp, expc in zip(response, expected):
             self.assertEqual(resp, expc)
+
+    def test_get_transaction_response_is_error_raise_sbanken_error(self):
+        self.sbanken.session.get().json.return_value = {
+            "isError": True,
+            "errorType": None,
+            "errorMessage": None,
+        }
+
+        account_id = "test-account-id"
+        self.assertRaises(SbankenError, self.sbanken.get_transactions, account_id)
+
+    def test_get_accounts_calls_get_with_correct_args(self):
+        self.sbanken.session.get().json.return_value = {"items": [], "isError": False}
+        # Reset number of times called
+        self.sbanken.session.get.reset_mock()
+
+        self.sbanken.get_accounts()
+
+        self.sbanken.session.get.assert_called_once_with(
+            f"https://api.sbanken.no/bank/api/v1/Accounts",
+            headers={"customerId": self.sbanken.customer_id},
+        )
+
+    def test_get_accounts_returns_correct_accounts(self):
+        items = [1, 2, 3]
+        expected = items
+
+        self.sbanken.session.get().json.return_value = {
+            "items": items,
+            "isError": False,
+        }
+
+        response = self.sbanken.get_accounts()
+
+        for resp, expc in zip(response, expected):
+            self.assertEqual(expc, resp)
+
+    def test_get_accounts_returns_is_error_raise_sbanken_error(self):
+        self.sbanken.session.get().json.return_value = {
+            "isError": True,
+            "errorType": None,
+            "errorMessage": None,
+        }
+
+        self.assertRaises(SbankenError, self.sbanken.get_accounts)
+
+    def test_get_account_with_account_name_calls_get_with_correct_args(self):
+        self.sbanken.session.get().json.return_value = {"items": [], "isError": False}
+        # Reset number of times called
+        self.sbanken.session.get.reset_mock()
+
+        account_name = "test-account-name"
+        self.sbanken.get_account(account_name=account_name)
+
+        self.sbanken.session.get.assert_called_once_with(
+            f"https://api.sbanken.no/bank/api/v1/Accounts",
+            headers={"customerId": self.sbanken.customer_id},
+        )
+
+    def test_get_account_with_account_name_returns_correct_account(self):
+        correct_name = "correct-name"
+        correct_customer_id = self.sbanken.customer_id
+        items = [
+            {"name": correct_name, "ownerCustomerId": "wrong-customer-id"},
+            {"name": correct_name, "ownerCustomerId": correct_customer_id},
+            {"name": "wrong-name-2", "ownerCustomerId": correct_customer_id},
+        ]
+        expected = items[1]
+        self.sbanken.session.get().json.return_value = {
+            "items": items,
+            "isError": False,
+        }
+        # Reset number of times called
+        self.sbanken.session.get.reset_mock()
+
+        actual = self.sbanken.get_account(account_name=correct_name)
+
+        self.assertEqual(expected, actual)
+
+    def test_get_account_with_account_name_customer_id_returns_correct_account(self):
+        correct_name = "correct-name"
+        correct_customer_id = "test-customer-id"
+        items = [
+            {"name": correct_name, "ownerCustomerId": "wrong-customer-id"},
+            {"name": correct_name, "ownerCustomerId": correct_customer_id},
+            {"name": "wrong-name-2", "ownerCustomerId": correct_customer_id},
+        ]
+        expected = items[1]
+        self.sbanken.session.get().json.return_value = {
+            "items": items,
+            "isError": False,
+        }
+        # Reset number of times called
+        self.sbanken.session.get.reset_mock()
+
+        actual = self.sbanken.get_account(
+            account_name=correct_name, customer_id=correct_customer_id
+        )
+
+        self.assertEqual(expected, actual)
+
+    def test_get_account_no_items_returns_none(self):
+        correct_name = "correct-name"
+        items = []
+        self.sbanken.session.get().json.return_value = {
+            "items": items,
+            "isError": False,
+        }
+
+        response = self.sbanken.get_account(account_name=correct_name)
+
+        self.assertIsNone(response)
+
+    def test_get_account_response_is_error_raise_sbanken_error(self):
+        self.sbanken.session.get().json.return_value = {
+            "isError": True,
+            "errorType": None,
+            "errorMessage": None,
+        }
+
+        account_name = "test-account-name"
+        self.assertRaises(SbankenError, self.sbanken.get_account, account_name)
