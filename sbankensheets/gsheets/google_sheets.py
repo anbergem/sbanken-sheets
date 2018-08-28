@@ -27,16 +27,28 @@ class GSheet(object):
         self.service = GSheet._create_authenticated_google_service()
         self.spreadsheet_id = spreadsheet_id
 
-    def get(self, range: A1Range) -> Dict:
+    def get(
+        self, range: A1Range, value_render_option=None, date_time_render_option=None
+    ) -> Dict:
         """
         Get the cell values within the specified range.
         :param range: The range to retrieve the cell values from.
+        :param value_render_option: Rendering option for output value.
+        Valid valued are FORMATTED_VALUE, UNFORMATTED_VALUE and FORMULA
+        :param date_time_render_option: Determines how dates should be
+        rendered in the output. Valid values are SERIAL_NUMBER and
+        FORMATTED_STRING
         :return: A dict with the cell values stored in 'values'.
         """
         return (
             self.service.spreadsheets()
             .values()
-            .get(spreadsheetId=self.spreadsheet_id, range=str(range))
+            .get(
+                spreadsheetId=self.spreadsheet_id,
+                range=str(range),
+                valueRenderOption=value_render_option,
+                dateTimeRenderOption=date_time_render_option,
+            )
             .execute()
         )
 

@@ -24,7 +24,10 @@ class TestGSheet(unittest.TestCase):
         self.gsheets.get(range)
 
         self.gsheets.service.spreadsheets().values().get.assert_called_once_with(
-            range=range, spreadsheetId=self.gsheets.spreadsheet_id
+            range=range,
+            spreadsheetId=self.gsheets.spreadsheet_id,
+            valueRenderOption=None,
+            dateTimeRenderOption=None,
         )
 
     def test_get_calls_service_get_execute_once(self):

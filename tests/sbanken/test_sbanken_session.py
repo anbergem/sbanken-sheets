@@ -1,8 +1,6 @@
 import unittest
 import unittest.mock as mock
-import os
 
-from sbankensheets.definitions import AUTH_PATH
 from sbankensheets.sbanken import SbankenSession
 
 

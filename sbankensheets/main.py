@@ -2,6 +2,7 @@ from pprint import pprint
 
 import sbankensheets.sbanken as sb
 import sbankensheets.gsheets as gs
+import sbankensheets.categorize as ct
 from sbankensheets.gsheets import urls
 
 
@@ -18,7 +19,10 @@ def main():
         account["accountId"], start_date="2018-08-12", length=1000
     )
 
-    gsheets = gs.GSheet(urls.spreadsheet_id)
+    gsheet = gs.GSheet(urls.spreadsheet_id)
+
+    categories = ct.get_categories(gsheet)
+
     sheet = "August Transaksjoner"
 
     divided_transactions = sb.divide_transactions(
@@ -30,16 +34,18 @@ def main():
         ),
     )
 
-    # Todo: Include savings
     # Start cells
     expenses_date_cell, income_date_cell, savings_date_cell = gs.find_cells(
-        gsheets, sheet, "Dato"
+        gsheet, sheet, "Dato"
     )
 
     for transaction_date_cell, name in zip(
         (expenses_date_cell, income_date_cell, savings_date_cell),
         ("expenses", "income", "savings"),
     ):
+        for transaction in divided_transactions[name]:
+            category = ct.categorize(transaction, categories[name])
+            transaction.category = category
 
         # Subtract a column for encoding
         transaction_id_cell = transaction_date_cell - (1, 0)
@@ -50,7 +56,7 @@ def main():
             transaction_id_cell + (0, 1), sheet=sheet
         )
 
-        transaction_ids = gsheets.get(transaction_id_range)
+        transaction_ids = gsheet.get(transaction_id_range)
         transaction_id_values = transaction_ids["values"]
 
         # If transactions are manually entered, they're id should me '.'
@@ -70,9 +76,15 @@ def main():
         )
         # Reverse order to ascending
         values = values[::-1]
-        response = gsheets.append(transaction_range, values)
+        response = gsheet.append(transaction_range, values)
 
-        pprint(response)
+        if "updatedRows" in response["updates"]:
+            updates = response["updates"]
+            print(
+                f"Updated {updates['updatedRows']} rows and {updates['updatedColumns']} columns for {name}"
+            )
+        else:
+            print(f"No updates for {name}")
 
 
 if __name__ == "__main__":
