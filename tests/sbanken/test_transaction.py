@@ -160,3 +160,30 @@ class TestTransaction(unittest.TestCase):
         result = divide_transactions(transactions, categories)
 
         self.assertEqual(expected, result)
+
+    def test_filter_transactions(self):
+        same_mocks = [mock.MagicMock() for _ in range(2)]
+        only_first_mocks = [mock.MagicMock() for _ in range(3)]
+        first = same_mocks + only_first_mocks
+        second = same_mocks + [mock.MagicMock() for _ in range(4)]
+
+        results = filter_transactions(first, second)
+
+        self.assertTrue(
+            set(results) == set(only_first_mocks)
+            and len(results) == len(only_first_mocks)
+        )
+
+    @mock.patch("sbankensheets.sbanken.transaction.Transaction")
+    def test_cell_values_to_transactions_calls_decode_on_0_index_for_each_cell_value(
+        self, mock_transaction
+    ):
+        mock_cell_values = [mock.MagicMock() for _ in range(3)]
+
+        # Wrap in list to trigger generator
+        list(cell_values_to_transactions(mock_cell_values))
+
+        expected = list(map(lambda x: mock.call(x.__getitem__()), mock_cell_values))
+        actual = mock_transaction._decode.call_args_list
+
+        self.assertEqual(expected, actual)
