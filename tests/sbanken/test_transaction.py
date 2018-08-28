@@ -1,7 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from sbankensheets.sbanken.transaction import Transaction
+from sbankensheets.sbanken.transaction import (
+    Transaction,
+    divide_transactions,
+    filter_transactions,
+    cell_values_to_transactions,
+)
 
 
 class TestTransaction(unittest.TestCase):
@@ -137,3 +142,21 @@ class TestTransaction(unittest.TestCase):
         mock_string = mock.Mock()
         transaction = Transaction._decode(mock_string)
         self.assertEqual(transaction._data, mock_pickle.loads())
+
+    def test_divide_transactions_append_category_func_tuple_if_func(self):
+        transactions = [mock.MagicMock(spec=Transaction) for _ in range(3)]
+        categories = [
+            (mock.MagicMock(spec=str), mock.MagicMock(side_effect=[True, False, True]))
+            for _ in range(3)
+        ]
+
+        # Because of side effect, divide_transactions should skip transactions[1]
+        expected = {
+            categories[0][0]: transactions[::2],
+            categories[1][0]: transactions[::2],
+            categories[2][0]: transactions[::2],
+        }
+
+        result = divide_transactions(transactions, categories)
+
+        self.assertEqual(expected, result)
