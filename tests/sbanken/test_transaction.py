@@ -1,7 +1,12 @@
 import unittest
 import unittest.mock as mock
 
-from sbankensheets.sbanken.transaction import Transaction
+from sbankensheets.sbanken.transaction import (
+    Transaction,
+    divide_transactions,
+    filter_transactions,
+    cell_values_to_transactions,
+)
 
 
 class TestTransaction(unittest.TestCase):
@@ -137,3 +142,48 @@ class TestTransaction(unittest.TestCase):
         mock_string = mock.Mock()
         transaction = Transaction._decode(mock_string)
         self.assertEqual(transaction._data, mock_pickle.loads())
+
+    def test_divide_transactions_append_category_func_tuple_if_func(self):
+        transactions = [mock.MagicMock(spec=Transaction) for _ in range(3)]
+        categories = [
+            (mock.MagicMock(spec=str), mock.MagicMock(side_effect=[True, False, True]))
+            for _ in range(3)
+        ]
+
+        # Because of side effect, divide_transactions should skip transactions[1]
+        expected = {
+            categories[0][0]: transactions[::2],
+            categories[1][0]: transactions[::2],
+            categories[2][0]: transactions[::2],
+        }
+
+        result = divide_transactions(transactions, categories)
+
+        self.assertEqual(expected, result)
+
+    def test_filter_transactions(self):
+        same_mocks = [mock.MagicMock() for _ in range(2)]
+        only_first_mocks = [mock.MagicMock() for _ in range(3)]
+        first = same_mocks + only_first_mocks
+        second = same_mocks + [mock.MagicMock() for _ in range(4)]
+
+        results = filter_transactions(first, second)
+
+        self.assertTrue(
+            set(results) == set(only_first_mocks)
+            and len(results) == len(only_first_mocks)
+        )
+
+    @mock.patch("sbankensheets.sbanken.transaction.Transaction")
+    def test_cell_values_to_transactions_calls_decode_on_0_index_for_each_cell_value(
+        self, mock_transaction
+    ):
+        mock_cell_values = [mock.MagicMock() for _ in range(3)]
+
+        # Wrap in list to trigger generator
+        list(cell_values_to_transactions(mock_cell_values))
+
+        expected = list(map(lambda x: mock.call(x.__getitem__()), mock_cell_values))
+        actual = mock_transaction._decode.call_args_list
+
+        self.assertEqual(expected, actual)

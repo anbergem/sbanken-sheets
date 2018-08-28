@@ -6,6 +6,7 @@ import requests
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
+from sbankensheets.sbanken.errors import SbankenError
 from sbankensheets.sbanken.transaction import Transaction
 
 
@@ -64,7 +65,7 @@ class SbankenSession(object):
         ).json()
 
         if response["isError"]:
-            raise RuntimeError(f'{response["errorType"]} {response["errorMessage"]}')
+            raise SbankenError(f'{response["errorType"]} {response["errorMessage"]}')
 
         transactions = [Transaction(transaction) for transaction in response["items"]]
 
@@ -83,9 +84,7 @@ class SbankenSession(object):
         if not response["isError"]:
             return response["items"]
         else:
-            raise RuntimeError(
-                "{} {}".format(response["errorType"], response["errorMessage"])
-            )
+            raise SbankenError(f'{response["errorType"]} {response["errorMessage"]}')
 
     def get_account(self, account_name, customer_id=None) -> Optional[Dict]:
         """
@@ -106,9 +105,7 @@ class SbankenSession(object):
         ).json()
 
         if response["isError"]:
-            raise RuntimeError(
-                "{} {}".format(response["errorType"], response["errorMessage"])
-            )
+            raise SbankenError(f'{response["errorType"]} {response["errorMessage"]}')
 
         accounts = response["items"]
 
