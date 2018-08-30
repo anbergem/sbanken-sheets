@@ -1,7 +1,7 @@
 from typing import List, Optional, Iterable
 
-from sbankensheets.gsheets.a1 import A1Cell, A1Range
-from sbankensheets.gsheets.google_sheets import GSheet
+from ..gsheets.a1 import A1Cell, A1Range
+from ..gsheets.google_sheets import GSheet
 
 
 def find_cells(gsheet: GSheet, sheet: str, value: str) -> Optional[List[A1Cell]]:

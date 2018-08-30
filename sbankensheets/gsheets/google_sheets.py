@@ -1,10 +1,10 @@
-from typing import List, Dict, Sequence
+from typing import Dict, Sequence
 
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import file, client, tools
 
-from sbankensheets.gsheets.a1 import A1Range
+from ..gsheets.a1 import A1Range
 
 
 class GSheet(object):

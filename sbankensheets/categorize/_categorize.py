@@ -1,9 +1,8 @@
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from sbankensheets.gsheets import GSheet, A1Range
-from sbankensheets.gsheets import find_cells
-from sbankensheets.sbanken import Transaction
+from ..gsheets import GSheet, A1Range, find_cells
+from ..sbanken import Transaction
 
 category_sheet = "Kategorier"
 

@@ -1,13 +1,13 @@
-from os import environ
 import urllib.parse
+from os import environ
 from typing import List, Dict, Optional, Sequence
 
 import requests
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
-from sbankensheets.sbanken.errors import SbankenError
-from sbankensheets.sbanken.transaction import Transaction
+from ..sbanken.errors import SbankenError
+from ..sbanken.transaction import Transaction
 
 
 class SbankenSession(object):

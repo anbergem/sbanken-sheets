@@ -1,8 +1,6 @@
-from pprint import pprint
-
-import sbankensheets.sbanken as sb
-import sbankensheets.gsheets as gs
 import sbankensheets.categorize as ct
+import sbankensheets.gsheets as gs
+import sbankensheets.sbanken as sb
 from sbankensheets.gsheets import urls
 
 
@@ -23,7 +21,7 @@ def main():
 
     categories = ct.get_categories(gsheet)
 
-    sheet = "August Transaksjoner"
+    sheet = "Dummy"
 
     divided_transactions = sb.divide_transactions(
         transactions,

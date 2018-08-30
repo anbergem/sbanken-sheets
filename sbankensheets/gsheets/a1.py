@@ -1,4 +1,4 @@
-from typing import Union, Tuple, List, Sequence
+from typing import Union, Tuple, Sequence
 
 
 class A1Cell(object):
