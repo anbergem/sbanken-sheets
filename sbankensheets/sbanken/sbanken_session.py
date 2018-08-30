@@ -15,7 +15,10 @@ class SbankenSession(object):
     Class for handling HTTPS requests to the REST API from SBanken.
     """
 
-    unbooked_text_keywords = list(map(str.lower, ["Varekjøp", "Varekjøp VISA", "VISA"]))
+    unbooked_text_keywords = tuple(
+        map(str.lower, ("Varekjøp", "Varekjøp VISA", "VISA"))
+    )
+    unstable_transaction_keys = ("transactionId", "source", "reservationType")
 
     @staticmethod
     def _create_authenticated_http_session(
@@ -134,7 +137,7 @@ class SbankenSession(object):
         Sometimes they appear, sometimes not. This affects the encoding, if not handled.
         """
         for transaction in data:
-            for keyword in ("transactionId", "source", "reservationType"):
+            for keyword in self.unstable_transaction_keys:
                 if keyword in transaction:
                     del transaction[keyword]
 
@@ -144,7 +147,7 @@ class SbankenSession(object):
         for_keeps = filter(
             lambda transaction: all(
                 keyword != transaction.text.lower()
-                for keyword in SbankenSession.unbooked_text_keywords
+                for keyword in self.unbooked_text_keywords
             ),
             transactions,
         )

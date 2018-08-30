@@ -189,3 +189,5 @@ class TestSbanken(unittest.TestCase):
 
         account_name = "test-account-name"
         self.assertRaises(SbankenError, self.sbanken.get_account, account_name)
+
+    def test_
