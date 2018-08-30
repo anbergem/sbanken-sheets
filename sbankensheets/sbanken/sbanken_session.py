@@ -1,6 +1,6 @@
 import urllib.parse
 from os import environ
-from typing import List, Dict, Optional, Sequence
+from typing import List, Dict, Optional, Sequence, Iterable
 
 import requests
 from oauthlib.oauth2 import BackendApplicationClient
@@ -15,7 +15,7 @@ class SbankenSession(object):
     Class for handling HTTPS requests to the REST API from SBanken.
     """
 
-    unbooked_text_keywords = ["Varekjøp", "Varekjøp VISA", "VISA"]
+    unbooked_text_keywords = list(map(str.lower, ["Varekjøp", "Varekjøp VISA", "VISA"]))
 
     @staticmethod
     def _create_authenticated_http_session(
@@ -143,7 +143,7 @@ class SbankenSession(object):
     ) -> List[Transaction]:
         for_keeps = filter(
             lambda transaction: all(
-                keyword != transaction.text
+                keyword != transaction.text.lower()
                 for keyword in SbankenSession.unbooked_text_keywords
             ),
             transactions,
