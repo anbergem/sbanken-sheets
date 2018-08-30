@@ -205,3 +205,25 @@ class TestSbanken(unittest.TestCase):
         self.sbanken._remove_unstable_transaction_keys([transaction_mock])
 
         transaction_mock.__delitem__.assert_called_once_with(test_keyword)
+
+    @mock.patch(
+        "sbankensheets.sbanken.sbanken_session.SbankenSession.unbooked_text_keywords"
+    )
+    def test_remove_unbooked_transactions_removes_transactions_with_test_in_keywords(
+        self, mock_keys
+    ):
+        good_trans_mock = mock.MagicMock()
+        good_trans_mock.text.lower().__ne__.return_value = True
+
+        bad_trans_mock = mock.MagicMock()
+        bad_trans_mock.text.lower().__ne__.return_value = False
+
+        test_keyword = "test-keyword"
+        mock_keys.__iter__.return_value = [test_keyword]
+
+        expected = [good_trans_mock]
+        actual = self.sbanken._remove_unbooked_transactions(
+            [good_trans_mock, bad_trans_mock]
+        )
+
+        self.assertEqual(expected, actual)
