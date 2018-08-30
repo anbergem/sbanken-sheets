@@ -193,16 +193,15 @@ class TestSbanken(unittest.TestCase):
     @mock.patch(
         "sbankensheets.sbanken.sbanken_session.SbankenSession.unstable_transaction_keys"
     )
-    def test_remove_transaction_in_unstable_transaction_keys_calls_del(self, mock_keys):
-        data_mock = mock.MagicMock()
-
+    def test_transaction_in_unstable_transaction_keys_calls_del_on_keyword_in_transaction(
+        self, mock_keys
+    ):
         transaction_mock = mock.MagicMock()
         transaction_mock.__contains__.return_value = True
 
         test_keyword = "test-keyword"
-        data_mock.__iter__.return_value = [transaction_mock]
         mock_keys.__iter__.return_value = [test_keyword]
 
-        self.sbanken._remove_unstable_transaction_keys(data_mock)
+        self.sbanken._remove_unstable_transaction_keys([transaction_mock])
 
         transaction_mock.__delitem__.assert_called_once_with(test_keyword)
