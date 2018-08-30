@@ -54,7 +54,7 @@ class TestSbanken(unittest.TestCase):
         )
 
     def test_get_transaction_returns_correct_transactions(self):
-        items = [1, 2, 3]
+        items = [mock.MagicMock(dict), mock.MagicMock(dict), mock.MagicMock(dict)]
         expected = [self.Transaction(item) for item in items]
 
         self.sbanken.session.get().json.return_value = {
