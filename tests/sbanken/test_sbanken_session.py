@@ -190,4 +190,19 @@ class TestSbanken(unittest.TestCase):
         account_name = "test-account-name"
         self.assertRaises(SbankenError, self.sbanken.get_account, account_name)
 
-    def test_
+    @mock.patch(
+        "sbankensheets.sbanken.sbanken_session.SbankenSession.unstable_transaction_keys"
+    )
+    def test_remove_transaction_in_unstable_transaction_keys_calls_del(self, mock_keys):
+        data_mock = mock.MagicMock()
+
+        transaction_mock = mock.MagicMock()
+        transaction_mock.__contains__.return_value = True
+
+        test_keyword = "test-keyword"
+        data_mock.__iter__.return_value = [transaction_mock]
+        mock_keys.__iter__.return_value = [test_keyword]
+
+        self.sbanken._remove_unstable_transaction_keys(data_mock)
+
+        transaction_mock.__delitem__.assert_called_once_with(test_keyword)
