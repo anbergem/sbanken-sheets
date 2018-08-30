@@ -54,7 +54,7 @@ class TestSbanken(unittest.TestCase):
         )
 
     def test_get_transaction_returns_correct_transactions(self):
-        items = [1, 2, 3]
+        items = [mock.MagicMock(dict), mock.MagicMock(dict), mock.MagicMock(dict)]
         expected = [self.Transaction(item) for item in items]
 
         self.sbanken.session.get().json.return_value = {
@@ -189,3 +189,41 @@ class TestSbanken(unittest.TestCase):
 
         account_name = "test-account-name"
         self.assertRaises(SbankenError, self.sbanken.get_account, account_name)
+
+    @mock.patch(
+        "sbankensheets.sbanken.sbanken_session.SbankenSession.unstable_transaction_keys"
+    )
+    def test_transaction_in_unstable_transaction_keys_calls_del_on_keyword_in_transaction(
+        self, mock_keys
+    ):
+        transaction_mock = mock.MagicMock()
+        transaction_mock.__contains__.return_value = True
+
+        test_keyword = "test-keyword"
+        mock_keys.__iter__.return_value = [test_keyword]
+
+        self.sbanken._remove_unstable_transaction_keys([transaction_mock])
+
+        transaction_mock.__delitem__.assert_called_once_with(test_keyword)
+
+    @mock.patch(
+        "sbankensheets.sbanken.sbanken_session.SbankenSession.unbooked_text_keywords"
+    )
+    def test_remove_unbooked_transactions_removes_transactions_with_test_in_keywords(
+        self, mock_keys
+    ):
+        good_trans_mock = mock.MagicMock()
+        good_trans_mock.text.lower().__ne__.return_value = True
+
+        bad_trans_mock = mock.MagicMock()
+        bad_trans_mock.text.lower().__ne__.return_value = False
+
+        test_keyword = "test-keyword"
+        mock_keys.__iter__.return_value = [test_keyword]
+
+        expected = [good_trans_mock]
+        actual = self.sbanken._remove_unbooked_transactions(
+            [good_trans_mock, bad_trans_mock]
+        )
+
+        self.assertEqual(expected, actual)

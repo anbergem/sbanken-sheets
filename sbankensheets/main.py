@@ -21,7 +21,7 @@ def main():
 
     categories = ct.get_categories(gsheet)
 
-    sheet = "Dummy"
+    sheet = "August Transaksjoner"
 
     divided_transactions = sb.divide_transactions(
         transactions,

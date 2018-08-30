@@ -1,6 +1,6 @@
 import urllib.parse
 from os import environ
-from typing import List, Dict, Optional, Sequence
+from typing import List, Dict, Optional, Sequence, Iterable
 
 import requests
 from oauthlib.oauth2 import BackendApplicationClient
@@ -14,6 +14,11 @@ class SbankenSession(object):
     """
     Class for handling HTTPS requests to the REST API from SBanken.
     """
+
+    unbooked_text_keywords = tuple(
+        map(str.lower, ("Varekjøp", "Varekjøp VISA", "VISA"))
+    )
+    unstable_transaction_keys = ("transactionId", "source", "reservationType")
 
     @staticmethod
     def _create_authenticated_http_session(
@@ -67,9 +72,16 @@ class SbankenSession(object):
         if response["isError"]:
             raise SbankenError(f'{response["errorType"]} {response["errorMessage"]}')
 
-        transactions = [Transaction(transaction) for transaction in response["items"]]
+        data = response["items"]
+        if "transactionId" in data:
+            print("TransactionId present")
 
-        return transactions
+        self._remove_unstable_transaction_keys(data)
+
+        transactions = (Transaction(transaction) for transaction in data)
+        booked_transactions = self._remove_unbooked_transactions(transactions)
+
+        return booked_transactions
 
     def get_accounts(self) -> Sequence[Dict]:
         """
@@ -117,3 +129,27 @@ class SbankenSession(object):
                 return account
 
         return None
+
+    def _remove_unstable_transaction_keys(self, data):
+        """
+        These keywords are unstable from Sbanken.
+
+        Sometimes they appear, sometimes not. This affects the encoding, if not handled.
+        """
+        for transaction in data:
+            for keyword in self.unstable_transaction_keys:
+                if keyword in transaction:
+                    del transaction[keyword]
+
+    def _remove_unbooked_transactions(
+        self, transactions: Iterable[Transaction]
+    ) -> List[Transaction]:
+        for_keeps = filter(
+            lambda transaction: all(
+                keyword != transaction.text.lower()
+                for keyword in self.unbooked_text_keywords
+            ),
+            transactions,
+        )
+
+        return list(for_keeps)
