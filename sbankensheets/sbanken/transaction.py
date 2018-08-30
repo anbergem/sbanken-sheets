@@ -11,9 +11,6 @@ class Transaction(object):
     """
 
     def __init__(self, data):
-        for keyword in ("transactionId", "source", "reservationType"):
-            if keyword in data:
-                del data[keyword]
         self._data = data
         self._id = self._encode()
         self.category = ""

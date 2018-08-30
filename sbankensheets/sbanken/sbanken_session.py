@@ -15,6 +15,8 @@ class SbankenSession(object):
     Class for handling HTTPS requests to the REST API from SBanken.
     """
 
+    unbooked_text_keywords = ["Varekjøp", "Varekjøp VISA", "VISA"]
+
     @staticmethod
     def _create_authenticated_http_session(
         client_id: str, client_secret: str
@@ -67,9 +69,16 @@ class SbankenSession(object):
         if response["isError"]:
             raise SbankenError(f'{response["errorType"]} {response["errorMessage"]}')
 
-        transactions = [Transaction(transaction) for transaction in response["items"]]
+        data = response["items"]
+        if "transactionId" in data:
+            print("TransactionId present")
 
-        return transactions
+        self._remove_unstable_transaction_keys(data)
+
+        transactions = (Transaction(transaction) for transaction in data)
+        booked_transactions = self._remove_unbooked_transactions(transactions)
+
+        return booked_transactions
 
     def get_accounts(self) -> Sequence[Dict]:
         """
@@ -117,3 +126,27 @@ class SbankenSession(object):
                 return account
 
         return None
+
+    def _remove_unstable_transaction_keys(self, data):
+        """
+        These keywords are unstable from Sbanken.
+
+        Sometimes they appear, sometimes not. This affects the encoding, if not handled.
+        """
+        for transaction in data:
+            for keyword in ("transactionId", "source", "reservationType"):
+                if keyword in transaction:
+                    del transaction[keyword]
+
+    def _remove_unbooked_transactions(
+        self, transactions: Iterable[Transaction]
+    ) -> List[Transaction]:
+        for_keeps = filter(
+            lambda transaction: all(
+                keyword != transaction.text
+                for keyword in SbankenSession.unbooked_text_keywords
+            ),
+            transactions,
+        )
+
+        return list(for_keeps)
