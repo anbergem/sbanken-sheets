@@ -36,7 +36,7 @@ python-dotenv==0.9.1
 pyzmq==17.1.2
 requests==2.21.0
 requests-oauthlib==1.0.0
-rsa==3.4.2
+rsa==4.1
 simplegeneric==0.8.1
 six==1.11.0
 toml==0.9.4
